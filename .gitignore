@@ -47,5 +47,39 @@ app.*.map.json
 **/.turbo/
 **/.cache/
 
+# Legacy frontend artifacts moved from frontend/.gitignore
+frontend/.tmp
+frontend/.publish
+frontend/.deploy
+frontend/bower_components/
+frontend/releases/
+frontend/.node_history
+frontend/nbproject/
+frontend/.env
+frontend/*~
+frontend/*#
+frontend/.DS_STORE
+frontend/Thumbs.db
+frontend/.netbeans
+frontend/lib-cov
+frontend/*.seed
+frontend/*.out
+frontend/*.pid
+frontend/npm-debug.log
+
+# Flutter platform-specific generated files moved from nested .gitignore files
+apps/mobile/android/gradle/wrapper/gradle-wrapper.jar
+apps/mobile/android/.gradle/
+apps/mobile/android/captures/
+apps/mobile/android/gradlew
+apps/mobile/android/gradlew.bat
+apps/mobile/android/local.properties
+apps/mobile/android/**/GeneratedPluginRegistrant.java
+apps/mobile/android/.cxx/
+apps/mobile/android/key.properties
+apps/mobile/android/**/*.keystore
+apps/mobile/android/**/*.jks
+apps/mobile/linux/flutter/ephemeral/
+
 # Local workspace artifacts
 .codex

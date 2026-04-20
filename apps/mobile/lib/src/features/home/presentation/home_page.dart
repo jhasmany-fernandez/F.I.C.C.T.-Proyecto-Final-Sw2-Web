@@ -14,7 +14,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({this.currentUserEmail, this.onLogout, super.key});
+
+  final String? currentUserEmail;
+  final VoidCallback? onLogout;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -211,11 +214,29 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text(AppConfig.appName),
         actions: [
+          if (widget.currentUserEmail != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Center(
+                child: Text(
+                  widget.currentUserEmail!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppTheme.textMuted,
+                  ),
+                ),
+              ),
+            ),
           TextButton.icon(
             onPressed: _pickFloorPlan,
             icon: const Icon(Icons.upload_file_outlined),
             label: const Text('Cargar plano'),
           ),
+          if (widget.onLogout != null)
+            IconButton(
+              onPressed: widget.onLogout,
+              tooltip: 'Cerrar sesión',
+              icon: const Icon(Icons.logout_rounded),
+            ),
           const SizedBox(width: 12),
         ],
       ),

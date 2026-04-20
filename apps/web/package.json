@@ -1,0 +1,23 @@
+{
+  "name": "wireless-heatmapper-web",
+  "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3333",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0 --port 3333"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

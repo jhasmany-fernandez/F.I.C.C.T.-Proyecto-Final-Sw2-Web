@@ -18,6 +18,9 @@ se enfoca en levantar datos confiables desde Android.
 ## Estructura actual
 
 - `apps/mobile`: aplicacion Flutter creada y lista para evolucionar.
+- `apps/web`: base inicial del frontend web en `Next.js`.
+- `frontend`: dashboard legacy basado en `Bootstrap 4`, usado como referencia
+  visual para la migracion a `Next.js`.
 
 ## Estructura recomendada a futuro
 
@@ -172,6 +175,21 @@ entidades y flujos hacia una API en `NestJS` y un frontend web en `Next.js`.
 cd apps/mobile
 /tmp/flutter-sdk/bin/flutter pub get
 /tmp/flutter-sdk/bin/flutter run
+```
+
+## Ejecutar Next.js
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+## Ejecutar Next.js con Docker
+
+```bash
+cd apps/web
+docker compose up --build
 ```
 
 ## Ejecutar en Android fisico
