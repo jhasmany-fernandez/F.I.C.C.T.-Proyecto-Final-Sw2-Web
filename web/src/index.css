@@ -1,0 +1,139 @@
+/* =========================================================
+   Design tokens — Wireless HeatMapper Web
+   ========================================================= */
+:root {
+  /* --- Tipografía --- */
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  /* --- Colores base --- */
+  --bg: #ffffff;
+  --bg-page: #f0f4f8;
+  --bg-surface: #f7fafc;
+  --text: #4a5568;
+  --text-h: #1a202c;
+  --text-muted: #718096;
+  --border: #e2e8f0;
+  --border-light: #f0f4f8;
+
+  /* --- Sombras --- */
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14);
+  --shadow: var(--shadow-md);
+
+  /* --- Color primario (panel admin: azul) --- */
+  --color-primary: #2980b9;
+  --color-primary-hover: #2471a3;
+  --color-primary-disabled: #90cdf4;
+  --color-primary-bg: rgba(41, 128, 185, 0.12);
+
+  /* --- Acento (reservado para portal cliente Sprint 6: púrpura) --- */
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+
+  /* --- Semánticos de estado --- */
+  --color-success: #276749;
+  --color-success-bg: #f0fff4;
+  --color-success-border: #c6f6d5;
+
+  --color-danger: #c53030;
+  --color-danger-hover: #9b2c2c;
+  --color-danger-bg: #fff5f5;
+  --color-danger-border: #fed7d7;
+
+  --color-info: #2b6cb0;
+  --color-info-bg: #ebf8ff;
+  --color-info-border: #bee3f8;
+
+  --color-warning: #744210;
+  --color-warning-bg: #fffaf0;
+  --color-warning-border: #f6e05e;
+
+  /* --- Neutros de estado UI --- */
+  --color-muted-bg: #e2e8f0;
+  --color-muted-text: #4a5568;
+
+  /* --- Navegación lateral --- */
+  --nav-bg: #1a202c;
+  --nav-border: #2d3748;
+  --nav-text: #a0aec0;
+  --nav-text-active: #ffffff;
+  --nav-item-hover: #2d3748;
+  --nav-item-active: var(--color-primary);
+
+  /* --- Radios --- */
+  --radius-sm: 5px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+
+  /* --- Transiciones --- */
+  --transition-fast: 0.15s;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16171d;
+    --bg-page: #0f1016;
+    --bg-surface: #1f2028;
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --text-muted: #6b7280;
+    --border: #2e303a;
+    --border-light: #252630;
+    --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --nav-bg: #111318;
+    --nav-border: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+  }
+}
+
+/* =========================================================
+   Reset mínimo
+   ========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading);
+  color: var(--text-h);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,258 +1,137 @@
-# F.I.C.C.T. Proyecto Final SW2
+# Wireless HeatMapper
 
-Base de trabajo pensada como monorepo para frontend mobile/web y backend.
+Sistema integrado de relevamiento y análisis de cobertura WiFi.
+**Cliente:** Bulldog Tech. | **Equipo:** FICCT-UAGRM Grupo 24 | **Modalidad:** 100 % en línea
 
-## Descripcion del proyecto
+---
 
-Wireless HeatMapper es una herramienta movil para el analisis y optimizacion
-de cobertura WiFi mediante mapas de calor. La idea central del proyecto es
-capturar mediciones reales de redes inalambricas dentro de un ambiente,
-ubicarlas sobre un plano y, en etapas posteriores, transformar esos datos en
-visualizaciones, analisis de cobertura y sugerencias de posicionamiento de
-puntos de acceso.
+## Requisitos previos
 
-La validacion tecnica mas importante del proyecto no es el heatmap, sino la
-captura correcta de mediciones reales sobre un plano. Por eso el primer sprint
-se enfoca en levantar datos confiables desde Android.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) ≥ 24 con Compose v2
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) ≥ 3.6 (para desarrollo móvil)
+- [Node.js](https://nodejs.org/) ≥ 22 (para desarrollo web local sin Docker)
+- [Python](https://www.python.org/) ≥ 3.11 (para desarrollo backend local sin Docker)
 
-## Estructura actual
+---
 
-- `apps/mobile`: aplicacion Flutter creada y lista para evolucionar.
-- `apps/web`: base inicial del frontend web en `Next.js`.
-- `frontend`: dashboard legacy basado en `Bootstrap 4`, usado como referencia
-  visual para la migracion a `Next.js`.
-
-## Estructura recomendada a futuro
-
-- `apps/mobile`: Flutter para Android y Web.
-- `apps/web`: frontend web con Next.js.
-- `apps/api`: backend con NestJS.
-
-## Versiones actuales
-
-- `Flutter`: `3.41.7`
-- `Dart`: `3.11.5`
-- `DevTools`: `2.54.2`
-- `Version de la app`: `1.0.0+1`
-- `SDK constraint`: `^3.11.5`
-
-## Sprint 1
-
-### Objetivo
-
-Lograr que la app ya sirva para capturar datos reales de cobertura WiFi dentro
-de un ambiente.
-
-### Alcance funcional
-
-El Sprint 1 debe incluir:
-
-- carga de plano o imagen del ambiente
-- seleccion manual de puntos sobre el plano
-- escaneo WiFi desde Android
-- registro por punto de:
-  - coordenada `x`
-  - coordenada `y`
-  - `SSID`
-  - `BSSID`
-  - `RSSI`
-  - `frecuencia`
-  - `canal` cuando sea posible
-- guardado local de mediciones
-
-### Entregable esperado
-
-Una app donde el usuario pueda:
-
-- abrir un plano o imagen
-- tocar un punto dentro del plano
-- realizar una medicion WiFi real
-- guardar esa medicion localmente
-
-### Por que este sprint es el mas importante
-
-Este sprint valida el corazon del proyecto:
-
-- que Flutter puede manejar plano + interaccion visual
-- que Android permite capturar datos WiFi utiles para el caso real
-- que las mediciones pueden asociarse a coordenadas dentro del ambiente
-- que ya existe una base de datos real sobre la cual luego se podran construir
-  heatmaps, analisis y sugerencias inteligentes
-
-Sin este sprint funcionando, el resto del proyecto seria solo una simulacion o
-una capa visual sin datos confiables.
-
-### Modelo de datos minimo
-
-Para que la base sea compatible a futuro con `NestJS` y `Next.js`, conviene
-trabajar desde ya con estas entidades:
-
-`FloorPlan`
-- `id`
-- `name`
-- `imagePath`
-- `width`
-- `height`
-- `createdAt`
-
-`MeasurementPoint`
-- `id`
-- `floorPlanId`
-- `x`
-- `y`
-- `label` opcional
-- `createdAt`
-
-`WifiReading`
-- `id`
-- `measurementPointId`
-- `ssid`
-- `bssid`
-- `rssi`
-- `frequency`
-- `channel`
-- `timestamp`
-
-### Criterios de aceptacion
-
-- el usuario puede seleccionar una imagen del plano desde el dispositivo
-- la imagen se muestra correctamente en pantalla
-- el usuario puede tocar un punto y registrar coordenadas relativas al plano
-- la app puede escanear redes WiFi reales en Android
-- por cada punto se guarda al menos una lectura con `SSID`, `BSSID`, `RSSI` y
-  `frequency`
-- las mediciones quedan persistidas localmente
-- al volver a abrir la app, los datos siguen disponibles
-
-### Orden recomendado de implementacion
-
-1. carga y visualizacion del plano
-2. seleccion de puntos sobre la imagen
-3. persistencia local de planos y puntos
-4. escaneo WiFi en Android
-5. asociacion de lecturas WiFi con cada punto
-6. listado o marcado visual de mediciones guardadas
-
-### Lo que no entra todavia
-
-Estas partes quedan para sprints posteriores:
-
-- generacion de heatmap
-- interpolacion espacial
-- analisis de cobertura
-- deteccion de interferencias
-- sugerencias automaticas de posicionamiento
-- IA
-- sincronizacion con backend
-- reportes avanzados
-
-### Riesgos tecnicos a considerar
-
-- el escaneo WiFi depende de permisos de Android y, normalmente, permisos de
-  ubicacion
-- algunos dispositivos limitan la frecuencia de escaneo
-- no todos los telefonos exponen exactamente la misma informacion
-- el `canal` puede requerir derivarse desde `frequency`
-- para este sprint conviene trabajar primero con imagenes `PNG` o `JPG` en vez
-  de `PDF`
-
-### Arquitectura recomendada en Flutter
-
-Dentro de `apps/mobile/lib/src`, la organizacion recomendada es:
-
-- `core/`
-- `features/floor_plan/`
-- `features/measurement/`
-- `features/wifi_scan/`
-- `data/local/`
-
-Esto deja la app lista para crecer ordenadamente y facilita mapear luego las
-entidades y flujos hacia una API en `NestJS` y un frontend web en `Next.js`.
-
-## Ejecutar Flutter
+## Ejecución completa con Docker Compose
 
 ```bash
-cd apps/mobile
-/tmp/flutter-sdk/bin/flutter pub get
-/tmp/flutter-sdk/bin/flutter run
-```
+# 1. Copiar variables de entorno
+cp .env.example .env
+# Editar .env con valores reales (al menos SECRET_KEY y POSTGRES_PASSWORD)
 
-## Ejecutar Next.js
-
-```bash
-cd apps/web
-npm install
-npm run dev
-```
-
-## Ejecutar Next.js con Docker
-
-```bash
-cd apps/web
+# 2. Levantar todos los servicios (db + backend + web + nginx)
 docker compose up --build
+
+# 3. Verificar que el backend está operativo
+curl http://localhost/api/health
+# Respuesta esperada: {"status":"ok","version":"0.1.0","db":"ok"}
 ```
 
-## Ejecutar en Android fisico
+> Por defecto, los puertos de desarrollo quedan ligados a `127.0.0.1`.
+> Esto evita exponer accidentalmente el stack cuando trabajas en una VM remota.
 
-### Ver dispositivos disponibles
+Servicios disponibles tras `docker compose up`:
+
+| Servicio              | URL                       |
+| --------------------- | ------------------------- |
+| Panel web (React)     | http://localhost          |
+| API REST (FastAPI)    | http://localhost/api      |
+| API REST directa      | http://localhost:8000     |
+| Documentación OpenAPI | http://localhost/api/docs |
+
+---
+
+## Desarrollo en GCP VM por SSH
+
+Flujo recomendado:
 
 ```bash
-adb devices -l
-/tmp/flutter-sdk/bin/flutter devices
+# En la VM
+cp .env.example .env
+# Editar SECRET_KEY y POSTGRES_PASSWORD
+docker compose up --build -d
+docker compose logs -f backend web nginx
 ```
 
-### Ejecutar por USB
-
-Si el telefono ya esta conectado por cable y visible en `flutter devices`:
+Desde tu máquina local, abrir un túnel SSH:
 
 ```bash
-cd apps/mobile
-/tmp/flutter-sdk/bin/flutter run -d R5CN90TGVTK
+ssh -L 8080:127.0.0.1:80 -L 8000:127.0.0.1:8000 <usuario>@<IP_VM>
 ```
 
-### Ejecutar por WiFi
+URLs desde tu máquina local con el túnel activo:
 
-Primero conecta el telefono por USB y habilita `adb` por red:
+| Servicio                  | URL local               |
+| ------------------------- | ----------------------- |
+| Panel web                 | http://localhost:8080   |
+| API proxied por Nginx     | http://localhost:8080/api |
+| Backend directo           | http://localhost:8000   |
+| OpenAPI                   | http://localhost:8080/api/docs |
+
+Para un emulador Android ejecutándose en tu máquina local contra la VM remota:
 
 ```bash
-adb tcpip 5555
-adb connect 192.168.26.13:5555
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api
 ```
 
-Luego verifica que aparezca como dispositivo remoto:
+Guía rápida ampliada: [GCP_VM_DEV.md](GCP_VM_DEV.md).
+
+---
+
+## Desarrollo local por componente
+
+### Backend (FastAPI + PostgreSQL)
 
 ```bash
-adb devices -l
-/tmp/flutter-sdk/bin/flutter devices
+cd backend
+pip install -e ".[dev]"
+
+# Aplicar migraciones
+DATABASE_URL=postgresql://... alembic upgrade head
+
+# Ejecutar servidor con recarga automática
+uvicorn app.main:app --reload --port 8000
 ```
 
-Finalmente ejecuta la app por WiFi:
+Ver guía completa en [backend/README.md](backend/README.md).
+
+### Web (React + TypeScript + Vite)
 
 ```bash
-cd apps/mobile
-/tmp/flutter-sdk/bin/flutter run -d 192.168.26.13:5555
+cd web
+npm install
+npm run dev        # Servidor de desarrollo en http://localhost:5173
+npm run build      # Build de producción
+npm run lint       # Verificar ESLint
 ```
 
-### Si la conexion WiFi se cae
+Ver guía completa en [web/README.md](web/README.md).
 
-Vuelve a conectar el dispositivo con:
+### App móvil (Flutter / Android)
 
 ```bash
-adb connect 192.168.26.13:5555
+cd mobile
+flutter pub get
+flutter analyze
+flutter test
+flutter run        # Requiere emulador o dispositivo conectado
 ```
 
-## Configurar la URL del backend
+> La app se conecta a `http://10.0.2.2/api` por defecto (emulador Android apunta al localhost del host).
+> Para un dispositivo físico configurar `API_BASE_URL` en el build:
+> `flutter run --dart-define=API_BASE_URL=http://<IP_LOCAL>/api`
 
-Puedes pasar variables de compilacion con `--dart-define`:
+Ver guía completa en [mobile/README.md](mobile/README.md).
+
+---
+
+## Pre-commit hooks
 
 ```bash
-cd apps/mobile
-/tmp/flutter-sdk/bin/flutter run \
-  --dart-define=APP_ENV=development \
-  --dart-define=API_BASE_URL=http://localhost:3000/api
+pip install pre-commit
+pre-commit install
 ```
 
-## Siguiente paso sugerido
-
-Crear primero el backend en `NestJS` con rutas claras como `/auth`, `/users` o
-`/products`, y luego conectar Flutter a esas rutas desde una capa de servicios.
+Los hooks aplican automáticamente `ruff`, `prettier` y `eslint` antes de cada commit.

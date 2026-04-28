@@ -1,0 +1,76 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-heatmapper}
+      POSTGRES_USER: ${POSTGRES_USER:-heatmapper_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cambia_esto_en_produccion}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - heatmapper-net
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-heatmapper_user} -d ${POSTGRES_DB:-heatmapper}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-heatmapper_user}:${POSTGRES_PASSWORD:-cambia_esto_en_produccion}@db:5432/${POSTGRES_DB:-heatmapper}
+      SECRET_KEY: ${SECRET_KEY:-cambia_esto_por_un_secreto_seguro}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - heatmapper-net
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'python -c "import urllib.request; urllib.request.urlopen(''http://localhost:8000/health'')"',
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    networks:
+      - heatmapper-net
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${NGINX_BIND_HOST:-127.0.0.1}:${NGINX_HOST_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - web
+    networks:
+      - heatmapper-net
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  heatmapper-net:
+    driver: bridge

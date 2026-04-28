@@ -1,0 +1,42 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+
+jobs:
+  python:
+    name: Ruff lint & pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependencias (dev)
+        run: pip install -e ".[dev]"
+        working-directory: backend
+
+      - name: Lint con Ruff
+        run: ruff check .
+        working-directory: backend
+
+      - name: Ejecutar pruebas
+        run: pytest tests/ -v
+        working-directory: backend
+        env:
+          DATABASE_URL: sqlite:///./test.db
+          SECRET_KEY: ci_secret_key_only
+
+      - name: Build imagen Docker
+        run: docker build -t heatmapper-backend:ci ./backend

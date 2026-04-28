@@ -1,85 +1,81 @@
-# General
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# ─────────────────────────────────────────
+# Variables de entorno y secretos
+# ─────────────────────────────────────────
+.env
+.env.local
+.env.*.local
 
-# Editors
-*.iml
-*.ipr
-*.iws
+# ─────────────────────────────────────────
+# Flutter / Dart  (mobile/)
+# ─────────────────────────────────────────
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/android/app/google-services.json
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/Pods/
+mobile/.idea/
+mobile/*.iml
+
+# ─────────────────────────────────────────
+# Python / FastAPI  (backend/)
+# ─────────────────────────────────────────
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/.venv/
+backend/venv/
+backend/.pytest_cache/
+backend/.ruff_cache/
+backend/dist/
+backend/*.egg-info/
+backend/alembic/versions/*.pyc
+backend/test.db
+backend/.coverage
+backend/coverage*.json
+backend/coverage_output.txt
+backend/test_output.txt
+backend/test_results.txt
+
+# ─────────────────────────────────────────
+# Node / React  (web/)
+# ─────────────────────────────────────────
+web/node_modules/
+web/dist/
+web/.vite/
+web/lint_output.txt
+
+# ─────────────────────────────────────────
+# Archivos generados en raíz
+# ─────────────────────────────────────────
+/package-lock.json
+
+# ─────────────────────────────────────────
+# IDEs y editores
+# ─────────────────────────────────────────
 .idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
 
-# VS Code
-# .vscode/
+# ─────────────────────────────────────────
+# Docker
+# ─────────────────────────────────────────
+.docker/
 
-# Flutter / Dart / Pub
-**/doc/api/
-**/ios/Flutter/.last_build_id
-**/.dart_tool/
-**/.flutter-plugins-dependencies
-**/.pub-cache/
-**/.pub/
-**/build/
-**/coverage/
-
-# Flutter symbolication / obfuscation
-app.*.symbols
-app.*.map.json
-
-# Android build outputs
-**/android/app/debug
-**/android/app/profile
-**/android/app/release
-
-# Monorepo / future web-backend setup
-**/node_modules/
-**/.next/
-**/dist/
-**/.turbo/
-**/.cache/
-
-# Legacy frontend artifacts moved from frontend/.gitignore
-frontend/.tmp
-frontend/.publish
-frontend/.deploy
-frontend/bower_components/
-frontend/releases/
-frontend/.node_history
-frontend/nbproject/
-frontend/.env
-frontend/*~
-frontend/*#
-frontend/.DS_STORE
-frontend/Thumbs.db
-frontend/.netbeans
-frontend/lib-cov
-frontend/*.seed
-frontend/*.out
-frontend/*.pid
-frontend/npm-debug.log
-
-# Flutter platform-specific generated files moved from nested .gitignore files
-apps/mobile/android/gradle/wrapper/gradle-wrapper.jar
-apps/mobile/android/.gradle/
-apps/mobile/android/captures/
-apps/mobile/android/gradlew
-apps/mobile/android/gradlew.bat
-apps/mobile/android/local.properties
-apps/mobile/android/**/GeneratedPluginRegistrant.java
-apps/mobile/android/.cxx/
-apps/mobile/android/key.properties
-apps/mobile/android/**/*.keystore
-apps/mobile/android/**/*.jks
-apps/mobile/linux/flutter/ephemeral/
-
-# Local workspace artifacts
+# ─────────────────────────────────────────
+# Documentación interna y configuración IA
+# ─────────────────────────────────────────
 .codex
+AGENTS.md
+docs/
+.github/instructions/
+.github/skills/
