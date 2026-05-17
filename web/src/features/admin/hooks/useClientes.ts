@@ -14,6 +14,11 @@ import type { ClienteCreate, ClienteUpdate } from "../types";
 
 const CLIENTES_KEY = ["admin", "clientes"] as const;
 
+async function refrescarClientes(queryClient: ReturnType<typeof useQueryClient>) {
+  await queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+  await queryClient.refetchQueries({ queryKey: CLIENTES_KEY, type: "active" });
+}
+
 export function useClientes() {
   return useQuery({
     queryKey: CLIENTES_KEY,
@@ -25,8 +30,8 @@ export function useCrearCliente() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (datos: ClienteCreate) => crearCliente(datos),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+    onSuccess: async () => {
+      await refrescarClientes(queryClient);
     },
   });
 }
@@ -36,8 +41,8 @@ export function useActualizarCliente() {
   return useMutation({
     mutationFn: ({ id, datos }: { id: number; datos: ClienteUpdate }) =>
       actualizarCliente(id, datos),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+    onSuccess: async () => {
+      await refrescarClientes(queryClient);
     },
   });
 }
@@ -46,8 +51,8 @@ export function useDesactivarCliente() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => desactivarCliente(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+    onSuccess: async () => {
+      await refrescarClientes(queryClient);
     },
   });
 }

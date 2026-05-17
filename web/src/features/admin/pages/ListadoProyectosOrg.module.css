@@ -3,6 +3,8 @@
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .titulo {
@@ -34,6 +36,7 @@
   background: var(--bg);
   color: var(--text-h);
   cursor: pointer;
+  max-width: 100%;
 }
 
 .select:focus {
@@ -51,6 +54,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabla {
@@ -121,6 +125,7 @@
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 /* Modal de reasignación */
@@ -197,13 +202,59 @@
 
 /* Responsive */
 @media (max-width: 600px) {
+  .titulo {
+    font-size: 1.3rem;
+  }
+
+  .subtitulo {
+    font-size: 0.85rem;
+  }
+
+  .filtros {
+    align-items: stretch;
+  }
+
+  .select {
+    width: 100%;
+  }
+
+  .tabla {
+    min-width: 620px;
+    font-size: 0.85rem;
+  }
+
+  .tabla th,
+  .tabla td {
+    padding: 0.7rem 0.8rem;
+  }
+
   .tabla th:nth-child(5),
   .tabla td:nth-child(5),
   .tabla th:nth-child(6),
   .tabla td:nth-child(6) {
     display: none;
   }
+
+  .paginacion {
+    align-items: stretch;
+  }
+
+  .paginacion > * {
+    width: 100%;
+    text-align: center;
+  }
+
   .modalAcciones {
     flex-direction: column-reverse;
+  }
+
+  .modalAcciones > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .modal {
+    padding: 1.25rem;
   }
 }

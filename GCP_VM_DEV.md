@@ -26,13 +26,15 @@ POSTGRES_PASSWORD=una_clave_segura
 SECRET_KEY=una_clave_larga_y_segura
 ```
 
-Los puertos de desarrollo quedan ligados a localhost de la VM por defecto:
+Configuración sugerida para exponer el stack usando los puertos libres `5435`, `3000` y `8081`:
 
 ```env
-NGINX_BIND_HOST=127.0.0.1
-NGINX_HOST_PORT=80
-BACKEND_BIND_HOST=127.0.0.1
-BACKEND_HOST_PORT=8000
+DB_BIND_HOST=127.0.0.1
+DB_HOST_PORT=5435
+NGINX_BIND_HOST=0.0.0.0
+NGINX_HOST_PORT=8081
+BACKEND_BIND_HOST=0.0.0.0
+BACKEND_HOST_PORT=3000
 ```
 
 ## 2. Levantar el stack
@@ -50,24 +52,24 @@ docker compose logs -f backend web nginx
 Verificar salud:
 
 ```bash
-curl http://localhost/api/health
-curl http://localhost:8000/health
+curl http://localhost:8081/api/health
+curl http://localhost:3000/health
 ```
 
-## 3. Conectarte desde tu máquina local
+## 3. Conectarte desde tu máquina local o móvil
 
-Abrir un túnel SSH:
+Con esa configuración, el acceso directo queda así:
 
 ```bash
-ssh -L 8080:127.0.0.1:80 -L 8000:127.0.0.1:8000 <usuario>@<IP_VM>
+http://34.67.188.26:8081
 ```
 
-Con el túnel activo, usar:
+Usar:
 
-- Web: `http://localhost:8080`
-- API proxied: `http://localhost:8080/api`
-- Backend directo: `http://localhost:8000`
-- OpenAPI: `http://localhost:8080/api/docs`
+- Web: `http://34.67.188.26:8081`
+- API proxied: `http://34.67.188.26:8081/api`
+- Backend directo: `http://34.67.188.26:3000`
+- OpenAPI: `http://34.67.188.26:8081/api/docs`
 
 ## 4. Flujo diario
 
@@ -89,19 +91,13 @@ docker compose down
 
 ## 5. App móvil contra la VM
 
-### Emulador Android en tu máquina local
+### Emulador Android o dispositivo físico
 
-Si el túnel SSH expone la web/API en tu máquina local por el puerto `8080`, ejecutar:
+Si vas a conectar la app directamente a la VM, usar:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api
+flutter run --dart-define=API_BASE_URL=http://34.67.188.26:8081/api
 ```
-
-`10.0.2.2` es el alias del host para el emulador Android.
-
-### Dispositivo físico
-
-El túnel SSH no suele ser práctico para un teléfono físico. En ese caso necesitas una URL accesible desde el dispositivo, idealmente `https://<dominio>/api`.
 
 ## 6. Notas
 

@@ -16,6 +16,20 @@ import { Badge, Button, ConfirmDialog, EmptyState } from "@/shared/components";
 import { useToast } from "@/shared/components";
 import styles from "./GestionClientes.module.css";
 
+function extraerDetalleError(err: unknown): string | null {
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "response" in err &&
+    typeof (err as { response?: { data?: { detail?: string } } }).response?.data
+      ?.detail === "string"
+  ) {
+    return (err as { response: { data: { detail: string } } }).response.data
+      .detail;
+  }
+  return null;
+}
+
 export default function GestionClientes() {
   const { data: clientes, isLoading, isError } = useClientes();
   const { mutateAsync: crearCliente, isPending: creando } = useCrearCliente();
@@ -49,7 +63,9 @@ export default function GestionClientes() {
       if (status === 409) {
         setErrorModal(`Ya existe un cliente con el nombre "${nombre.trim()}".`);
       } else {
-        setErrorModal("Ocurrió un error al crear el cliente.");
+        setErrorModal(
+          extraerDetalleError(err) ?? "Ocurrió un error al crear el cliente.",
+        );
       }
     }
   };
@@ -96,7 +112,10 @@ export default function GestionClientes() {
           `Ya existe un cliente con el nombre "${nombreEditar.trim()}".`,
         );
       } else {
-        setErrorEditar("Ocurrió un error al actualizar el cliente.");
+        setErrorEditar(
+          extraerDetalleError(err) ??
+            "Ocurrió un error al actualizar el cliente.",
+        );
       }
     }
   };

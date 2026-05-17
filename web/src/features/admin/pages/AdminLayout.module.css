@@ -5,7 +5,7 @@
 /* Wrapper raíz */
 .layout {
   display: flex;
-  min-height: 100vh;
+  min-height: 100svh;
   background: var(--bg-page);
   position: relative;
 }
@@ -184,6 +184,17 @@
   padding: 2rem;
   overflow-x: hidden;
   min-width: 0;
+  width: 100%;
+}
+
+.estadoPantalla {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 2rem;
+  color: var(--text-muted);
+  background: var(--bg-page);
 }
 
 /* =========================================================
@@ -221,7 +232,7 @@
     top: 0;
     left: 0;
     height: 100vh;
-    width: 260px;
+    width: min(82vw, 300px);
     z-index: 150;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
@@ -235,7 +246,7 @@
   }
 
   .nav {
-    width: 260px;
+    width: min(82vw, 300px);
     height: 100%;
     position: static;
     padding-top: 3.5rem; /* espacio para botón cerrar */
@@ -255,8 +266,21 @@
    Responsive — Pantallas muy pequeñas (≤480px)
    ========================================================= */
 @media (max-width: 480px) {
+  .triggerMovil {
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
   .contenido {
     padding: 0.875rem;
     padding-top: 3.75rem;
+  }
+
+  .marca {
+    font-size: 0.9rem;
+  }
+
+  .perfil {
+    gap: 0.625rem;
   }
 }

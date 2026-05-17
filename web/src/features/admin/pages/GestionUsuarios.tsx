@@ -14,15 +14,20 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import styles from "./GestionUsuarios.module.css";
 
 export default function GestionUsuarios() {
-  const { data: usuarios, isLoading, isError } = useUsuarios();
-  const { mutateAsync: actualizar } = useActualizarUsuario();
+  const { data: usuarios, isLoading, isError, isFetching } = useUsuarios();
+  const { mutateAsync: actualizar, isPending: actualizando } =
+    useActualizarUsuario();
   const [mostrarModal, setMostrarModal] = useState(false);
   const [usuarioEditar, setUsuarioEditar] = useState<UsuarioOut | null>(null);
+  const [usuarioProcesandoId, setUsuarioProcesandoId] = useState<number | null>(
+    null,
+  );
   const usuarioActual = useAuth((s) => s.usuario);
   const toast = useToast();
 
   const toggleActivo = async (usuario: UsuarioOut) => {
     if (usuario.id === usuarioActual?.id) return;
+    setUsuarioProcesandoId(usuario.id);
     try {
       await actualizar({ id: usuario.id, datos: { activo: !usuario.activo } });
       toast.exito(
@@ -32,6 +37,8 @@ export default function GestionUsuarios() {
       );
     } catch {
       toast.error("No se pudo actualizar el estado del usuario.");
+    } finally {
+      setUsuarioProcesandoId(null);
     }
   };
 
@@ -61,8 +68,11 @@ export default function GestionUsuarios() {
           <p className={styles.subtitulo}>
             Gestione las cuentas de técnicos y administradores.
           </p>
+          {isFetching && !isLoading && (
+            <p className={styles.actualizando}>Actualizando lista…</p>
+          )}
         </div>
-        <Button onClick={() => setMostrarModal(true)}>
+        <Button onClick={() => setMostrarModal(true)} disabled={actualizando}>
           <UserPlus size={15} aria-hidden="true" />
           Nuevo técnico
         </Button>
@@ -100,6 +110,7 @@ export default function GestionUsuarios() {
                       <Button
                         variante="secondary"
                         tamano="sm"
+                        disabled={actualizando}
                         onClick={() => {
                           setUsuarioEditar(u);
                           setMostrarModal(false);
@@ -111,6 +122,10 @@ export default function GestionUsuarios() {
                         <Button
                           variante={u.activo ? "danger" : "secondary"}
                           tamano="sm"
+                          isLoading={
+                            actualizando && usuarioProcesandoId === u.id
+                          }
+                          disabled={actualizando}
                           onClick={() => toggleActivo(u)}
                         >
                           {u.activo ? "Desactivar" : "Activar"}

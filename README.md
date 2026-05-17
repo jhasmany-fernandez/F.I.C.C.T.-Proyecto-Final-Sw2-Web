@@ -25,7 +25,7 @@ cp .env.example .env
 docker compose up --build
 
 # 3. Verificar que el backend está operativo
-curl http://localhost/api/health
+curl http://localhost:8081/api/health
 # Respuesta esperada: {"status":"ok","version":"0.1.0","db":"ok"}
 ```
 
@@ -36,10 +36,10 @@ Servicios disponibles tras `docker compose up`:
 
 | Servicio              | URL                       |
 | --------------------- | ------------------------- |
-| Panel web (React)     | http://localhost          |
-| API REST (FastAPI)    | http://localhost/api      |
-| API REST directa      | http://localhost:8000     |
-| Documentación OpenAPI | http://localhost/api/docs |
+| Panel web (React)     | http://localhost:8081     |
+| API REST (FastAPI)    | http://localhost:8081/api |
+| API REST directa      | http://localhost:3000     |
+| Documentación OpenAPI | http://localhost:8081/api/docs |
 
 ---
 
@@ -58,22 +58,22 @@ docker compose logs -f backend web nginx
 Desde tu máquina local, abrir un túnel SSH:
 
 ```bash
-ssh -L 8080:127.0.0.1:80 -L 8000:127.0.0.1:8000 <usuario>@<IP_VM>
+ssh -L 8081:127.0.0.1:8081 -L 3000:127.0.0.1:3000 <usuario>@<IP_VM>
 ```
 
 URLs desde tu máquina local con el túnel activo:
 
 | Servicio                  | URL local               |
 | ------------------------- | ----------------------- |
-| Panel web                 | http://localhost:8080   |
-| API proxied por Nginx     | http://localhost:8080/api |
-| Backend directo           | http://localhost:8000   |
-| OpenAPI                   | http://localhost:8080/api/docs |
+| Panel web                 | http://localhost:8081   |
+| API proxied por Nginx     | http://localhost:8081/api |
+| Backend directo           | http://localhost:3000   |
+| OpenAPI                   | http://localhost:8081/api/docs |
 
 Para un emulador Android ejecutándose en tu máquina local contra la VM remota:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api
+flutter run --dart-define=API_BASE_URL=http://34.67.188.26:8081/api
 ```
 
 Guía rápida ampliada: [GCP_VM_DEV.md](GCP_VM_DEV.md).
@@ -92,7 +92,7 @@ pip install -e ".[dev]"
 DATABASE_URL=postgresql://... alembic upgrade head
 
 # Ejecutar servidor con recarga automática
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 3000
 ```
 
 Ver guía completa en [backend/README.md](backend/README.md).

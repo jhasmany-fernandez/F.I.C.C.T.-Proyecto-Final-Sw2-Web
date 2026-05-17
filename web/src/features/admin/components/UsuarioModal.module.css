@@ -15,6 +15,8 @@
   width: 100%;
   max-width: 480px;
   box-shadow: var(--shadow-lg);
+  max-height: min(92svh, 760px);
+  overflow-y: auto;
 }
 
 .header {
@@ -76,6 +78,15 @@
   transition: border-color var(--transition-fast);
 }
 
+.form select {
+  color-scheme: dark;
+}
+
+.form select option {
+  background: var(--bg-surface);
+  color: var(--text-h);
+}
+
 .form input:focus,
 .form select:focus {
   outline: 2px solid var(--color-primary);
@@ -102,7 +113,23 @@
 
 /* Responsive */
 @media (max-width: 480px) {
+  .modal {
+    max-width: 100%;
+  }
+
+  .header {
+    padding: 1rem 1rem 0.875rem;
+  }
+
+  .form {
+    padding: 1rem;
+  }
+
   .footer {
     flex-direction: column-reverse;
+  }
+
+  .footer > * {
+    width: 100%;
   }
 }

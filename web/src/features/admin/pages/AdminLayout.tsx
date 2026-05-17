@@ -4,8 +4,14 @@
  * Sprint 1 — PB-13, PB-18.
  */
 
-import { useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import {
+  NavLink,
+  Navigate,
+  Outlet,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import {
   Radio,
   Users,
@@ -34,34 +40,25 @@ function iniciales(nombre: string): string {
 }
 
 export default function AdminLayout() {
-  const { isAuthenticated, usuario, cerrarSesion, cargarSesion } = useAuth();
+  const { isAuthenticated, isReady, usuario, cerrarSesion } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   // El drawer se abre "en" un pathname específico; si el pathname cambia, queda cerrado.
   const [menuAbiertoEn, setMenuAbiertoEn] = useState<string | null>(null);
   const menuAbierto = menuAbiertoEn === location.pathname;
 
-  useEffect(() => {
-    cargarSesion();
-  }, [cargarSesion]);
+  if (!isReady) {
+    return <main className={styles.estadoPantalla}>Cargando sesión…</main>;
+  }
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      const timer = setTimeout(() => {
-        if (!useAuth.getState().isAuthenticated) {
-          navigate("/admin/login", { replace: true });
-        }
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, navigate]);
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
 
   const handleLogout = async () => {
     await cerrarSesion();
     navigate("/admin/login", { replace: true });
   };
-
-  if (!isAuthenticated) return null;
 
   const sidebar = (
     <nav className={styles.nav} aria-label="Navegación principal">

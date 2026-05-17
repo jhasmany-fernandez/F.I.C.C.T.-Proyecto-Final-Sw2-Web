@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Radio } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Button } from "@/shared/components";
 import styles from "./LoginAdmin.module.css";
 

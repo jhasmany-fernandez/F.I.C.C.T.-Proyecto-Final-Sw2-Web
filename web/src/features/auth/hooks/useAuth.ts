@@ -18,6 +18,7 @@ interface AuthStore extends AuthState {
 export const useAuth = create<AuthStore>((set) => ({
   usuario: null,
   isAuthenticated: false,
+  isReady: false,
   isLoading: false,
   error: null,
 
@@ -29,14 +30,18 @@ export const useAuth = create<AuthStore>((set) => ({
     if (raw && tieneToken) {
       try {
         const usuario: UsuarioOut = JSON.parse(raw);
-        set({ usuario, isAuthenticated: true });
+        set({ usuario, isAuthenticated: true, isReady: true });
       } catch {
         localStorage.removeItem("usuario");
+        set({ usuario: null, isAuthenticated: false, isReady: true });
       }
     } else if (raw && !tieneToken) {
       // Sesión inconsistente: hay perfil guardado pero los tokens expiraron o
       // fueron eliminados. Limpiar para evitar el bucle login ↔ usuarios.
       localStorage.removeItem("usuario");
+      set({ usuario: null, isAuthenticated: false, isReady: true });
+    } else {
+      set({ usuario: null, isAuthenticated: false, isReady: true });
     }
   },
 
@@ -48,12 +53,18 @@ export const useAuth = create<AuthStore>((set) => ({
       set({
         usuario: data.usuario,
         isAuthenticated: true,
+        isReady: true,
         isLoading: false,
         error: null,
       });
     } catch (err: unknown) {
       const mensaje = _extraerMensajeError(err);
-      set({ isLoading: false, error: mensaje, isAuthenticated: false });
+      set({
+        isLoading: false,
+        error: mensaje,
+        isAuthenticated: false,
+        isReady: true,
+      });
       throw err;
     }
   },
@@ -64,7 +75,12 @@ export const useAuth = create<AuthStore>((set) => ({
       if (refreshToken) await apiLogout(refreshToken);
     } finally {
       localStorage.removeItem("usuario");
-      set({ usuario: null, isAuthenticated: false, error: null });
+      set({
+        usuario: null,
+        isAuthenticated: false,
+        isReady: true,
+        error: null,
+      });
     }
   },
 }));

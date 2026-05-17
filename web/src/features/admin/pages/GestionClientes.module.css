@@ -26,13 +26,14 @@
   border: 1px solid var(--border);
   background: var(--bg);
   box-shadow: var(--shadow-sm);
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabla {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  min-width: 500px;
+  min-width: 560px;
 }
 
 .tabla th {
@@ -94,6 +95,7 @@
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 /* Modal */
@@ -168,10 +170,41 @@
 
 /* Responsive */
 @media (max-width: 480px) {
+  .encabezado > :first-child {
+    min-width: 0;
+  }
+
+  .titulo {
+    font-size: 1.3rem;
+  }
+
+  .subtitulo {
+    font-size: 0.85rem;
+  }
+
+  .tabla {
+    min-width: 520px;
+    font-size: 0.85rem;
+  }
+
+  .tabla th,
+  .tabla td {
+    padding: 0.7rem 0.8rem;
+  }
+
   .modal {
     padding: 1.25rem;
   }
+
+  .modalTitulo {
+    font-size: 1.1rem;
+  }
+
   .modalAcciones {
     flex-direction: column-reverse;
+  }
+
+  .modalAcciones > * {
+    width: 100%;
   }
 }

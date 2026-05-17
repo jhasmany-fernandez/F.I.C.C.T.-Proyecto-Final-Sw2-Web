@@ -29,6 +29,13 @@
   pointer-events: all;
   animation: slideIn 0.2s ease-out;
   max-width: 360px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .toast {
+    max-width: none;
+  }
 }
 
 @keyframes slideIn {

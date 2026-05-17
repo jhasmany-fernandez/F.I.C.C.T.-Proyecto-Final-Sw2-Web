@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 });
 
 function AppRoutes() {
-  const { cargarSesion } = useAuth();
+  const cargarSesion = useAuth((s) => s.cargarSesion);
 
   useEffect(() => {
     cargarSesion();

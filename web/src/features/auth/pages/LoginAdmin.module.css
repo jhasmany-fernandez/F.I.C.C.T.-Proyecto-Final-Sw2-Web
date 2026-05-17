@@ -1,5 +1,5 @@
 .container {
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,9 +120,23 @@
 
 /* Responsive */
 @media (max-width: 480px) {
+  .container {
+    align-items: stretch;
+    padding: 0.75rem;
+  }
+
   .card {
+    margin: auto 0;
     padding: 2rem 1.25rem;
     border-radius: var(--radius-lg);
     box-shadow: none;
+  }
+
+  .titulo {
+    font-size: 1.25rem;
+  }
+
+  .subtitulo {
+    margin-bottom: 1.5rem;
   }
 }
