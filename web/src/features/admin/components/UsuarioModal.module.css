@@ -76,17 +76,6 @@
   transition: border-color var(--transition-fast);
 }
 
-.form select,
-.form select option {
-  color: var(--text-h);
-  background: var(--bg);
-}
-
-.form select option:checked {
-  background: var(--color-primary);
-  color: #ffffff;
-}
-
 .form input:focus,
 .form select:focus {
   outline: 2px solid var(--color-primary);

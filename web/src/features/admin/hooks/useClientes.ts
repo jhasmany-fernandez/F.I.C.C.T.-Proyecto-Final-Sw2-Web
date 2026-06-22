@@ -12,7 +12,7 @@ import {
 } from "../api/clientesApi";
 import type { ClienteCreate, ClienteUpdate } from "../types";
 
-export const CLIENTES_KEY = ["admin", "clientes"] as const;
+const CLIENTES_KEY = ["admin", "clientes"] as const;
 
 export function useClientes() {
   return useQuery({

@@ -8,7 +8,6 @@ Sistema integrado de relevamiento y análisis de cobertura WiFi.
 ## Requisitos previos
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) ≥ 24 con Compose v2
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) ≥ 3.6 (para desarrollo móvil)
 - [Node.js](https://nodejs.org/) ≥ 22 (para desarrollo web local sin Docker)
 - [Python](https://www.python.org/) ≥ 3.11 (para desarrollo backend local sin Docker)
 
@@ -69,22 +68,6 @@ npm run lint       # Verificar ESLint
 ```
 
 Ver guía completa en [web/README.md](web/README.md).
-
-### App móvil (Flutter / Android)
-
-```bash
-cd mobile
-flutter pub get
-flutter analyze
-flutter test
-flutter run        # Requiere emulador o dispositivo conectado
-```
-
-> La app se conecta a `http://10.0.2.2/api` por defecto (emulador Android apunta al localhost del host).
-> Para un dispositivo físico configurar `API_BASE_URL` en el build:
-> `flutter run --dart-define=API_BASE_URL=http://<IP_LOCAL>/api`
-
-Ver guía completa en [mobile/README.md](mobile/README.md).
 
 ---
 

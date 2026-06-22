@@ -16,9 +16,7 @@ from app.storage.signing import generar_url_firmada, verificar_firma
 def storage_temporal(monkeypatch):
     with tempfile.TemporaryDirectory() as tmp:
         monkeypatch.setattr(settings, "storage_root", tmp)
-        monkeypatch.setattr(
-            settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx"
-        )
+        monkeypatch.setattr(settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx")
         monkeypatch.setattr(settings, "storage_url_ttl_seconds", 60)
         monkeypatch.setattr(settings, "public_api_url", "")
         yield tmp
@@ -183,6 +181,7 @@ def test_listar_planos(client, tecnico_token):
     )
     assert r.status_code == 200
     assert len(r.json()) == 2
+    assert all(plano["cantidad_puntos"] == 0 for plano in r.json())
 
 
 # ---------- PB-11: calibrar escala ----------
@@ -271,6 +270,57 @@ def test_eliminar_plano(client, tecnico_token):
     assert r.status_code == 204
 
 
+def test_eliminar_plano_con_puntos_retorna_409(client, tecnico_token):
+    pid = _crear_proyecto(client, tecnico_token)
+    plano = _subir_plano(client, tecnico_token, pid)
+    body_calibracion = {
+        "x1": 0,
+        "y1": 0,
+        "x2": 100,
+        "y2": 0,
+        "distancia_real_m": 5,
+    }
+    r_calibracion = client.patch(
+        f"/planos/{plano['id']}/calibracion",
+        json=body_calibracion,
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    assert r_calibracion.status_code == 200
+    r_medicion = client.post(
+        "/mediciones",
+        json={
+            "plano_id": plano["id"],
+            "pos_x": 50,
+            "pos_y": 75,
+            "mediciones": [
+                {
+                    "ssid": "RedOficina",
+                    "bssid": "aa:bb:cc:dd:ee:01",
+                    "rssi": -65,
+                    "canal": 6,
+                    "frecuencia_mhz": 2437,
+                },
+            ],
+        },
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    assert r_medicion.status_code == 201
+
+    r_lista = client.get(
+        f"/proyectos/{pid}/planos",
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    assert r_lista.status_code == 200
+    assert r_lista.json()[0]["cantidad_puntos"] == 1
+
+    r = client.delete(
+        f"/planos/{plano['id']}",
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    assert r.status_code == 409
+    assert "puntos de medición" in r.json()["detail"]
+
+
 # ---------- URLs firmadas ----------
 
 
@@ -306,12 +356,9 @@ def test_url_firmada_manipulada(client, tecnico_token):
 
 
 def test_verificar_firma_unit():
-    assert (
-        verificar_firma(
-            ruta_relativa="x.png",
-            secret="s",
-            exp=int(time.time()) + 60,
-            sig="bad",
-        )
-        is False
-    )
+    assert verificar_firma(
+        ruta_relativa="x.png",
+        secret="s",
+        exp=int(time.time()) + 60,
+        sig="bad",
+    ) is False

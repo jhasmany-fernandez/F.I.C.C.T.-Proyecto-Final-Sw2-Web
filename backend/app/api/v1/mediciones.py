@@ -6,6 +6,7 @@ Rutas expuestas:
   POST   /api/mediciones                    — ingesta de lote (Sp3-04)
   GET    /api/planos/{plano_id}/puntos      — listar puntos de un plano (Sp3-14)
   GET    /api/puntos/{punto_id}             — detalle de punto (Sp3-14)
+  PATCH  /api/puntos/{punto_id}             — mover punto sobre el plano
   DELETE /api/puntos/{punto_id}             — eliminar punto con cascada (Sp3-15)
 """
 
@@ -15,6 +16,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.usuario import Usuario
+from app.repositories.heatmap_repository import MapaCalorRepository
 from app.repositories.medicion_repository import MedicionRepository
 from app.repositories.plano_repository import PlanoRepository
 from app.repositories.proyecto_repository import ProyectoRepository
@@ -25,6 +27,7 @@ from app.schemas.medicion import (
     MedicionWifiOut,
     PuntoMedicionDetalleOut,
     PuntoMedicionOut,
+    PuntoMedicionUpdateIn,
 )
 
 router_mediciones = APIRouter(prefix="/mediciones", tags=["mediciones"])
@@ -222,6 +225,43 @@ def agregar_mediciones_a_punto(
 
 
 # ---------------------------------------------------------------------------
+# PATCH /api/puntos/{punto_id} — mover punto existente
+# ---------------------------------------------------------------------------
+
+
+@router_puntos.patch(
+    "/{punto_id}",
+    response_model=PuntoMedicionDetalleOut,
+    summary="Mover punto de medición",
+    description=(
+        "Actualiza las coordenadas del punto sobre el plano sin cambiar sus "
+        "mediciones. Invalida los heatmaps cacheados del plano."
+    ),
+)
+def mover_punto(
+    punto_id: int,
+    body: PuntoMedicionUpdateIn,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+) -> PuntoMedicionDetalleOut:
+    punto = _verificar_ownership_punto(
+        punto_id=punto_id,
+        current_user=current_user,
+        db=db,
+    )
+    repo = MedicionRepository(db)
+    punto = repo.actualizar_posicion(
+        punto=punto,
+        pos_x=body.pos_x,
+        pos_y=body.pos_y,
+    )
+    MapaCalorRepository(db).invalidar_plano(plano_id=punto.plano_id)
+    db.commit()
+    db.refresh(punto)
+    return PuntoMedicionDetalleOut.model_validate(punto)
+
+
+# ---------------------------------------------------------------------------
 # DELETE /api/puntos/{punto_id} — Sp3-15
 # ---------------------------------------------------------------------------
 
@@ -230,7 +270,10 @@ def agregar_mediciones_a_punto(
     "/{punto_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Eliminar punto de medición",
-    description=("Elimina el punto y sus mediciones en cascada. PB-04 — CA-5."),
+    description=(
+        "Elimina el punto y sus mediciones en cascada. "
+        "PB-04 — CA-5."
+    ),
 )
 def eliminar_punto(
     punto_id: int,

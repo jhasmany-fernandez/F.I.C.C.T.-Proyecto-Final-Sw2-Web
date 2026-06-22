@@ -25,5 +25,10 @@ class Settings(BaseSettings):
     # se devuelven URLs relativas que el cliente concatena con su base.
     public_api_url: str = ""
 
+    # Firebase Admin SDK (notificaciones de asignación de proyectos)
+    firebase_project_id: str = ""
+    firebase_credentials_path: str = ""
+    firebase_credentials_json: str = ""
+
 
 settings = Settings()

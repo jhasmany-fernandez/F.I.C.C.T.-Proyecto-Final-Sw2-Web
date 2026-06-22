@@ -19,7 +19,7 @@
   z-index: 200;
   background: var(--nav-bg);
   color: var(--nav-text-active);
-  border: 1px solid var(--nav-border);
+  border: none;
   border-radius: var(--radius-md);
   padding: 0.5rem;
   cursor: pointer;
@@ -68,7 +68,6 @@
   width: 240px;
   height: 100vh;
   background: var(--nav-bg);
-  border-right: 1px solid var(--nav-border);
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -84,16 +83,8 @@
   color: var(--nav-text-active);
   font-weight: 700;
   font-size: 0.95rem;
-  letter-spacing: 0.01em;
   padding: 0 0.5rem 1.5rem;
   border-bottom: 1px solid var(--nav-border);
-}
-
-.logoMarca {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  flex-shrink: 0;
 }
 
 .menu {
@@ -126,90 +117,27 @@
 }
 
 .activo {
-  background: var(--nav-item-active-bg);
-  color: var(--nav-item-active-text);
-}
-
-/* ---- Columna principal (topbar + contenido) ---- */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-/* ---- Barra superior ---- */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 2rem;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.topbarTitulo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-h);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.topbarTitulo svg {
-  color: var(--color-primary);
-}
-
-.topbarAcciones {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* ---- Botón de icono (toggle de tema) ---- */
-.iconBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  color: var(--text);
-  cursor: pointer;
-  transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.iconBtn:hover {
-  background: var(--bg-surface);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--nav-item-active);
+  color: var(--nav-text-active);
 }
 
 /* ---- Perfil de usuario ---- */
 .perfil {
+  padding-top: 1rem;
+  border-top: 1px solid var(--nav-border);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 0.5rem;
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--color-primary);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -218,36 +146,36 @@
 }
 
 .nombreUsuario {
-  color: var(--text-h);
-  font-size: 0.875rem;
-  font-weight: 600;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  padding: 0 0.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 160px;
+  max-width: 100%;
 }
 
 .botonSalir {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 0.5rem 0.875rem;
+  background: none;
+  border: 1px solid var(--nav-border);
+  color: var(--nav-text);
+  padding: 0.45rem 0.75rem;
   border-radius: var(--radius-md);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   cursor: pointer;
   transition:
     background var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast);
+    color var(--transition-fast);
+  width: 100%;
 }
 
 .botonSalir:hover {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  border-color: var(--color-danger-border);
+  background: #e53e3e;
+  color: #fff;
+  border-color: #e53e3e;
 }
 
 /* ---- Contenido principal ---- */
@@ -269,10 +197,6 @@
   .nav {
     width: 200px;
     padding: 1.25rem 0.75rem;
-  }
-
-  .topbar {
-    padding: 0.75rem 1.5rem;
   }
 
   .contenido {
@@ -321,21 +245,9 @@
     display: flex;
   }
 
-  /* Espacio a la izquierda para no solapar con la hamburguesa fixed */
-  .topbar {
-    padding: 0.75rem 1rem 0.75rem 4rem;
-  }
-
-  .nombreUsuario {
-    display: none;
-  }
-
-  .botonSalirTexto {
-    display: none;
-  }
-
   .contenido {
     padding: 1rem;
+    padding-top: 4rem; /* espacio para hamburguesa fixed */
   }
 }
 
@@ -343,11 +255,8 @@
    Responsive — Pantallas muy pequeñas (≤480px)
    ========================================================= */
 @media (max-width: 480px) {
-  .topbar {
-    gap: 0.5rem;
-  }
-
   .contenido {
     padding: 0.875rem;
+    padding-top: 3.75rem;
   }
 }

@@ -5,12 +5,9 @@
  */
 
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import {
-  STORAGE_ACCESS,
-  STORAGE_REFRESH,
-  limpiarSesion,
-  obtenerToken,
-} from "./authStorage";
+
+const STORAGE_ACCESS = "access_token";
+const STORAGE_REFRESH = "refresh_token";
 
 export const apiClient = axios.create({
   baseURL: "/api",
@@ -19,7 +16,7 @@ export const apiClient = axios.create({
 
 // ── Interceptor de request: adjunta Bearer token ──────────────────────────
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = obtenerToken(STORAGE_ACCESS);
+  const token = localStorage.getItem(STORAGE_ACCESS);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -52,7 +49,7 @@ apiClient.interceptors.response.use(
     };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      const refreshToken = obtenerToken(STORAGE_REFRESH);
+      const refreshToken = localStorage.getItem(STORAGE_REFRESH);
 
       if (!refreshToken) {
         _redirigirALogin();
@@ -76,10 +73,7 @@ apiClient.interceptors.response.use(
           "/api/auth/refresh",
           { refresh_token: refreshToken },
         );
-        const targetStorage = localStorage.getItem(STORAGE_REFRESH)
-          ? localStorage
-          : sessionStorage;
-        targetStorage.setItem(STORAGE_ACCESS, data.access_token);
+        localStorage.setItem(STORAGE_ACCESS, data.access_token);
         apiClient.defaults.headers.common.Authorization = `Bearer ${data.access_token}`;
         procesarCola(null, data.access_token);
         originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
@@ -98,9 +92,13 @@ apiClient.interceptors.response.use(
 );
 
 function _redirigirALogin() {
-  limpiarSesion();
+  localStorage.removeItem(STORAGE_ACCESS);
+  localStorage.removeItem(STORAGE_REFRESH);
+  localStorage.removeItem("usuario");
   // Evitar redirección en bucle si ya estamos en login
   if (!window.location.pathname.includes("/admin/login")) {
     window.location.href = "/admin/login";
   }
 }
+
+export { STORAGE_ACCESS, STORAGE_REFRESH };

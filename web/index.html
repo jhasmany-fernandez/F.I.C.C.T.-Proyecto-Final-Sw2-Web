@@ -2,28 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link id="app-favicon" rel="icon" type="image/png" href="/img/logo-negro.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wireless HeatMapper</title>
-    <script>
-      (function () {
-        var guardado = localStorage.getItem("heatmapper-theme");
-        var tema =
-          guardado === "light" || guardado === "dark"
-            ? guardado
-            : window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light";
-        document.documentElement.setAttribute("data-theme", tema);
-        var favicon = document.getElementById("app-favicon");
-        if (favicon) {
-          favicon.setAttribute(
-            "href",
-            tema === "dark" ? "/img/logo-blanco.png" : "/img/logo-negro.png",
-          );
-        }
-      })();
-    </script>
+    <title>web</title>
   </head>
   <body>
     <div id="root"></div>

@@ -22,9 +22,7 @@ class PdfService:
 
     DEFAULT_DPI = 150
 
-    def render_first_page(
-        self, contenido_pdf: bytes, dpi: int = DEFAULT_DPI
-    ) -> PdfRenderResult:
+    def render_first_page(self, contenido_pdf: bytes, dpi: int = DEFAULT_DPI) -> PdfRenderResult:
         """Renderiza la primera página del PDF a PNG con la resolución indicada.
 
         Lanza ``ValueError`` si el PDF está vacío o corrupto.

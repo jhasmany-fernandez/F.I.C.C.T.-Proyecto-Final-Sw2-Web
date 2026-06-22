@@ -98,6 +98,12 @@ class MedicionWifi(Base):
     frecuencia_mhz = Column(Integer, nullable=True)
     nivel = Column(nivel_senal_enum, nullable=False)
     numero_lectura = Column(Integer, nullable=False, default=1)
+    instantanea_rf_id = Column(
+        Integer,
+        ForeignKey("instantanea_configuracion_rf.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     punto = relationship("PuntoMedicion", back_populates="mediciones")

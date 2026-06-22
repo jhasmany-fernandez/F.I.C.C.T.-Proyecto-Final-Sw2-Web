@@ -1,0 +1,560 @@
+.encabezado {
+  margin-bottom: 1.5rem;
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+  padding: 0 0 0.5rem;
+}
+
+.volver:hover {
+  color: var(--text-h);
+}
+
+.titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 0.25rem;
+}
+
+.subtitulo {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.intro {
+  margin-bottom: 1rem;
+}
+
+.intro h2 {
+  color: var(--text-h);
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+}
+
+.intro p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.banda {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+
+.panelGeneracion {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+}
+
+.panelHeader,
+.resultadosHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.panelHeader h3,
+.resultadosHeader h2 {
+  color: var(--text-h);
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
+.panelHeader p,
+.resultadosHeader p {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  margin: 0;
+}
+
+.accionesMasivas {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.generacionGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.44fr);
+}
+
+.columnaFuente {
+  display: grid;
+  gap: 1rem;
+}
+
+.panelParametros {
+  align-self: start;
+}
+
+.panelParametros .formulario,
+.panelParametros .formularioConjunto {
+  grid-template-columns: 1fr;
+}
+
+.seccionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+  color: var(--text-h);
+}
+
+.seccionHeader h2 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.planosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.planoCard {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text);
+  text-align: left;
+  padding: 0.75rem;
+  cursor: pointer;
+}
+
+.planoCard:hover {
+  border-color: var(--color-primary);
+}
+
+.planoCard span {
+  display: block;
+  color: var(--text-h);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.planoCard small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 0.25rem;
+  line-height: 1.35;
+}
+
+.planoActivo {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.conjuntoEditor {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.formularioConjunto {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.875rem;
+}
+
+.formularioConjunto label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.formularioConjunto input,
+.formularioConjunto select,
+.filtroAPs input {
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.selectorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  color: var(--text-h);
+}
+
+.filtroAPs {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+.filtroAPs input {
+  width: 100%;
+}
+
+.listaAPs {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 28rem;
+  overflow: auto;
+  padding-right: 0.125rem;
+}
+
+.apRow {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.apRow:hover {
+  border-color: var(--color-primary);
+}
+
+.apRow input {
+  margin-top: 0.15rem;
+}
+
+.apRow strong {
+  display: block;
+  color: var(--text-h);
+  font-size: 0.88rem;
+  margin-bottom: 0.15rem;
+  overflow-wrap: anywhere;
+}
+
+.apRow small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.apActivo {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.sinCoincidencias {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin: 0;
+  padding: 0.75rem 0;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.875rem;
+}
+
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.formulario input,
+.formulario select {
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.campoBandas {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 0.75rem;
+  margin: 0;
+  display: flex;
+  gap: 0.875rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.campoBandas legend {
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.campoBandas label {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 500;
+}
+
+.accionesFormulario {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-top: 1rem;
+}
+
+.resumenFuente {
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.lista {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.grupos {
+  display: grid;
+  gap: 1rem;
+}
+
+.resultados {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+
+.resultadosHeader {
+  margin-bottom: 1rem;
+}
+
+.grupo {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: grid;
+  gap: 0.875rem;
+  padding: 0.875rem;
+}
+
+.grupoHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.grupoHeader h3 {
+  color: var(--text-h);
+  font-size: 0.98rem;
+  margin: 0 0 0.2rem;
+}
+
+.grupoHeader p {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.escenario {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+}
+
+.escenarioHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.escenario h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  color: var(--text-h);
+}
+
+.escenario p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.metricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.875rem 0;
+}
+
+.metricas span {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.55rem;
+}
+
+.recomendaciones {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.recomendacion {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.625rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+}
+
+.recomendacion strong {
+  display: block;
+  color: var(--text-h);
+  font-size: 0.88rem;
+  margin-bottom: 0.15rem;
+}
+
+.accionesEscenario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.comparacion {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.comparacionMetricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+}
+
+.comparacionMetricas span {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-h);
+  font-size: 0.82rem;
+  padding: 0.4rem 0.6rem;
+}
+
+.heatmapsComparacion {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.heatmapsComparacion figure {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: 0;
+  overflow: hidden;
+}
+
+.heatmapsComparacion figcaption {
+  color: var(--text-h);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.6rem;
+}
+
+.heatmapsComparacion img {
+  background: #111827;
+  display: block;
+  height: auto;
+  max-height: 32rem;
+  object-fit: contain;
+  width: 100%;
+}
+
+.skeleton {
+  height: 8rem;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg-surface) 50%, var(--border) 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (max-width: 800px) {
+  .generacionGrid,
+  .planosGrid,
+  .formularioConjunto,
+  .formulario,
+  .heatmapsComparacion {
+    grid-template-columns: 1fr;
+  }
+
+  .panelHeader,
+  .resultadosHeader,
+  .grupoHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .accionesMasivas {
+    justify-content: flex-start;
+  }
+
+  .accionesFormulario {
+    align-items: stretch;
+  }
+}

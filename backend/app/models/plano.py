@@ -72,6 +72,21 @@ class Plano(Base):
         back_populates="plano",
         cascade="all, delete-orphan",
     )
+    mapas_calor = relationship(
+        "MapaCalor",
+        back_populates="plano",
+        cascade="all, delete-orphan",
+    )
+    conjuntos_ap = relationship(
+        "ConjuntoAP",
+        back_populates="plano",
+        cascade="all, delete-orphan",
+    )
+    aps_fisicos = relationship(
+        "APFisico",
+        back_populates="plano",
+        cascade="all, delete-orphan",
+    )
 
     @property
     def calibrado(self) -> bool:

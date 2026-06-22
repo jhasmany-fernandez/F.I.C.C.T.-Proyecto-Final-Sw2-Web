@@ -3,6 +3,7 @@
 Sprint 1 — PB-19 (Sp1-31): CRUD básico de clientes para el admin.
 """
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.cliente import Cliente
@@ -36,9 +37,7 @@ class ClienteRepository:
         self._db.refresh(cliente)
         return cliente
 
-    def actualizar(
-        self, cliente: Cliente, *, nombre: str | None = None, activo: bool | None = None
-    ) -> Cliente:
+    def actualizar(self, cliente: Cliente, *, nombre: str | None = None, activo: bool | None = None) -> Cliente:
         if nombre is not None:
             cliente.nombre = nombre.strip()
         if activo is not None:

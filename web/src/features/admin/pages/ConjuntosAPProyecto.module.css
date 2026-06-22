@@ -1,0 +1,332 @@
+.contenedor {
+  display: grid;
+  gap: 1rem;
+}
+
+.encabezadoSeccion {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.encabezadoSeccion h2 {
+  color: var(--text-h);
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+}
+
+.encabezadoSeccion p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.resumen {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.resumenItem {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 0.875rem;
+}
+
+.resumenItem span,
+.resumenItem strong {
+  display: block;
+}
+
+.resumenItem span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-bottom: 0.35rem;
+}
+
+.resumenItem strong {
+  color: var(--text-h);
+  font-size: 1.35rem;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filtros button {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  min-height: 2.125rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.filtros .filtroActivo {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.tablaWrapper {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.tabla {
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 940px;
+  width: 100%;
+}
+
+.tabla th {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 700;
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabla td {
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-h);
+  padding: 0.75rem 0.875rem;
+  vertical-align: top;
+}
+
+.tabla tr:last-child td {
+  border-bottom: 0;
+}
+
+.nombre strong,
+.nombre small {
+  display: block;
+}
+
+.nombre strong {
+  color: var(--text-h);
+  margin-bottom: 0.15rem;
+}
+
+.nombre small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  max-width: 24rem;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.editor,
+.revision {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.editorCampos {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editorCampos label {
+  color: var(--text);
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 700;
+  gap: 0.35rem;
+}
+
+.editorCampos input,
+.editorCampos select,
+.selectoresTemporales select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-h);
+  font: inherit;
+  min-height: 2.4rem;
+  padding: 0.45rem 0.65rem;
+  width: 100%;
+}
+
+.apSelector {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-height: 18rem;
+  overflow: auto;
+}
+
+.apSelector label {
+  align-items: flex-start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-h);
+  cursor: pointer;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  padding: 0.65rem;
+}
+
+.apSelector strong,
+.apSelector small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.apSelector small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.accionesEditor,
+.modos,
+.selectoresTemporales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.accionesEditor {
+  justify-content: flex-end;
+}
+
+.revisionHeader {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.revisionHeader h2,
+.comparacionTemporal h3 {
+  color: var(--text-h);
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
+.revisionHeader p {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.modos button {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.7rem;
+}
+
+.modos .modoActivo {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.vistaMapa {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin: 0;
+  overflow: hidden;
+}
+
+.vistaMapa figcaption,
+.vistaMapa small {
+  color: var(--text);
+  display: block;
+  font-size: 0.78rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.vistaMapa figcaption {
+  color: var(--text-h);
+  font-weight: 700;
+}
+
+.vistaMapa img {
+  background: #111827;
+  display: block;
+  height: auto;
+  max-height: 30rem;
+  object-fit: contain;
+  width: 100%;
+}
+
+.comparacionTemporal {
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.selectoresTemporales select {
+  flex: 1 1 16rem;
+}
+
+.mapasComparados {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.skeleton {
+  animation: shimmer 1.4s infinite;
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg-surface) 50%, var(--border) 75%);
+  background-size: 400% 100%;
+  border-radius: var(--radius-md);
+  height: 12rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (max-width: 900px) {
+  .resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .editorCampos,
+  .apSelector,
+  .mapasComparados {
+    grid-template-columns: 1fr;
+  }
+}

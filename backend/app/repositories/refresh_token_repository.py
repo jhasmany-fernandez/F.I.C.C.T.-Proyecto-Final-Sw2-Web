@@ -3,7 +3,7 @@
 PB-09 — Sprint 1 (Sp1-13 / Sp1-15): login, logout y refresh de sesión.
 """
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,7 @@ class RefreshTokenRepository:
     def crear(self, usuario_id: int) -> str:
         """Genera y persiste un nuevo refresh token. Retorna el valor del token."""
         token_value = RefreshToken.generate_token()
-        expires_at = datetime.now(UTC) + timedelta(
+        expires_at = datetime.now(timezone.utc) + timedelta(
             days=settings.refresh_token_expire_days
         )
         record = RefreshToken(

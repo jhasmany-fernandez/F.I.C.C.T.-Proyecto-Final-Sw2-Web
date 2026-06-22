@@ -34,8 +34,11 @@ services:
       STORAGE_URL_SECRET: ${STORAGE_URL_SECRET:-cambia_esto_por_un_secreto_de_storage}
       STORAGE_URL_TTL_SECONDS: ${STORAGE_URL_TTL_SECONDS:-3600}
       PUBLIC_API_URL: ${PUBLIC_API_URL:-}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+      FIREBASE_CREDENTIALS_PATH: ${FIREBASE_CREDENTIALS_PATH:-}
     volumes:
       - planos_data:/var/lib/heatmapper/planos
+      - ./wireless-heatmapper-firebase-adminsdk-fbsvc-dd510e3001.json:/run/secrets/firebase-adminsdk.json:ro
     depends_on:
       db:
         condition: service_healthy

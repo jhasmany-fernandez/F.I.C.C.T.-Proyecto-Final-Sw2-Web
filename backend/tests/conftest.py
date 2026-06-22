@@ -4,26 +4,94 @@ Sprint 1 — Usa SQLite en memoria para independencia de PostgreSQL.
 """
 
 import pytest
-from fastapi.testclient import TestClient
+import anyio
+import anyio.to_thread
+import fastapi.routing
+import httpx
+import starlette.concurrency
+import starlette.routing
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base, get_db
 from app.core.security import hash_password
-from app.main import app
 from app.models.usuario import Usuario
 
-TEST_DATABASE_URL = "sqlite:///:memory:"
+
+async def _run_in_threadpool_directo(func, *args, **kwargs):
+    return func(*args, **kwargs)
+
+
+async def _anyio_run_sync_directo(func, *args, **kwargs):
+    kwargs.pop("abandon_on_cancel", None)
+    kwargs.pop("cancellable", None)
+    kwargs.pop("limiter", None)
+    return func(*args)
+
+
+fastapi.routing.run_in_threadpool = _run_in_threadpool_directo
+starlette.routing.run_in_threadpool = _run_in_threadpool_directo
+starlette.concurrency.run_in_threadpool = _run_in_threadpool_directo
+anyio.to_thread.run_sync = _anyio_run_sync_directo
+
+from app.main import app
+
+TEST_DATABASE_URL = "sqlite://"
 
 engine = create_engine(
     TEST_DATABASE_URL,
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@pytest.fixture(scope="session", autouse=True)
+class SyncASGIClient:
+    """Cliente síncrono para tests sobre httpx.ASGITransport.
+
+    Evita el bloqueo observado en ``fastapi.testclient.TestClient`` con
+    Python 3.14 + Starlette 1.0.0, manteniendo la API usada por los tests.
+    """
+
+    def __init__(self, app) -> None:
+        self._app = app
+
+    def request(self, method: str, url: str, **kwargs) -> httpx.Response:
+        async def _send() -> httpx.Response:
+            transport = httpx.ASGITransport(app=self._app)
+            async with httpx.AsyncClient(
+                transport=transport,
+                base_url="http://testserver",
+            ) as client:
+                response = await client.request(method, url, **kwargs)
+                await response.aread()
+                return response
+
+        return anyio.run(_send)
+
+    def get(self, url: str, **kwargs) -> httpx.Response:
+        return self.request("GET", url, **kwargs)
+
+    def post(self, url: str, **kwargs) -> httpx.Response:
+        return self.request("POST", url, **kwargs)
+
+    def put(self, url: str, **kwargs) -> httpx.Response:
+        return self.request("PUT", url, **kwargs)
+
+    def patch(self, url: str, **kwargs) -> httpx.Response:
+        return self.request("PATCH", url, **kwargs)
+
+    def delete(self, url: str, **kwargs) -> httpx.Response:
+        return self.request("DELETE", url, **kwargs)
+
+    def close(self) -> None:
+        return None
+
+
+@pytest.fixture(autouse=True)
 def crear_tablas():
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
@@ -32,31 +100,31 @@ def crear_tablas():
 @pytest.fixture
 def db_session():
     """Sesión de BD con rollback automático al finalizar cada test."""
-    connection = engine.connect()
-    transaction = connection.begin()
-    session = TestingSessionLocal(bind=connection)
+    session = TestingSessionLocal()
     try:
         yield session
     finally:
         session.close()
-        transaction.rollback()
-        connection.close()
 
 
 @pytest.fixture
 def client(db_session):
     """TestClient con la BD de pruebas inyectada."""
 
-    def override_get_db():
+    async def override_get_db():
+        session = TestingSessionLocal()
         try:
-            yield db_session
+            yield session
         finally:
-            pass
+            session.close()
 
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as c:
+    c = SyncASGIClient(app)
+    try:
         yield c
-    app.dependency_overrides.clear()
+    finally:
+        c.close()
+        app.dependency_overrides.clear()
 
 
 @pytest.fixture

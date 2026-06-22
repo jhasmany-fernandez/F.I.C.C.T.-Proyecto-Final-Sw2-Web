@@ -19,6 +19,23 @@ class ProyectoIn(BaseModel):
     descripcion: str | None = Field(default=None, max_length=500)
 
 
+class ProyectoAdminCreate(ProyectoIn):
+    """Alta de proyecto desde el panel web con técnico responsable."""
+
+    tecnico_id: int
+    estado: Literal["nuevo", "en_progreso", "completado", "archivado"] = "nuevo"
+
+
+class ProyectoAdminUpdate(BaseModel):
+    """Cambios parciales permitidos al administrador."""
+
+    nombre: str | None = Field(default=None, min_length=1, max_length=200)
+    cliente_id: int | None = None
+    descripcion: str | None = Field(default=None, max_length=500)
+    tecnico_id: int | None = None
+    estado: Literal["nuevo", "en_progreso", "completado", "archivado"] | None = None
+
+
 class ProyectoTecnicoOut(BaseModel):
     """DTO de salida para el listado de proyectos del técnico autenticado.
 
@@ -64,6 +81,7 @@ class ProyectoListOut(BaseModel):
 
     id: int
     nombre: str
+    descripcion: str | None = None
     cliente: ClienteBasicoOut | None
     estado: Literal["nuevo", "en_progreso", "completado", "archivado"]
     ultima_actividad: datetime
@@ -75,7 +93,7 @@ class ProyectoListOut(BaseModel):
 
 
 class ProyectosPageOut(BaseModel):
-    """Respuesta paginada del listado de proyectos. PB-18 (CA-5: p95 ≤ 1.5 s con 100 proyectos)."""
+    """Respuesta paginada del listado de proyectos de la organización."""
 
     items: list[ProyectoListOut]
     total: int

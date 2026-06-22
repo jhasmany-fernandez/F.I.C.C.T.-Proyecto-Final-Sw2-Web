@@ -5,7 +5,7 @@ PB-09, PB-13 — Sprint 1
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 import bcrypt
@@ -40,8 +40,9 @@ def create_access_token(
 ) -> str:
     """Genera un JWT de acceso con expiración corta (por defecto ACCESS_TOKEN_EXPIRE_MINUTES)."""
     to_encode = data.copy()
-    expire = datetime.now(UTC) + (
-        expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
+    expire = datetime.now(timezone.utc) + (
+        expires_delta
+        or timedelta(minutes=settings.access_token_expire_minutes)
     )
     to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
@@ -55,7 +56,7 @@ def _decode_token_raw(token: str) -> dict[str, Any]:
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
-) -> Usuario:
+) -> "Usuario":
     """Dependencia FastAPI: valida el Bearer JWT y retorna el usuario activo."""
     credentials_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -85,8 +86,8 @@ def get_current_user(
 
 
 def require_admin(
-    current_user: Usuario = Depends(get_current_user),
-) -> Usuario:
+    current_user: "Usuario" = Depends(get_current_user),
+) -> "Usuario":
     """Dependencia FastAPI: exige que el usuario tenga rol 'admin'."""
     if current_user.rol != "admin":
         raise HTTPException(

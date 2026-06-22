@@ -40,3 +40,4 @@ def health_check():
         pass
 
     return {"status": "ok", "version": "0.1.0", "db": db_status}
+

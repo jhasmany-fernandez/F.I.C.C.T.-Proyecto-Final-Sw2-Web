@@ -68,9 +68,13 @@ def _verificar_ownership(
     db: Session,
 ):
     repo = ProyectoRepository(db)
-    proyecto = repo.obtener_por_id(
-        proyecto_id=proyecto_id,
-        tecnico_id=current_user.id,
+    proyecto = (
+        repo.obtener_por_id_admin(proyecto_id=proyecto_id)
+        if current_user.rol == "admin"
+        else repo.obtener_por_id(
+            proyecto_id=proyecto_id,
+            tecnico_id=current_user.id,
+        )
     )
     if proyecto is None:
         raise HTTPException(
@@ -176,7 +180,9 @@ async def importar_plano(
                 detail="La imagen está corrupta o no es válida.",
             ) from exc
         tamano_bytes = len(contenido)
-        ruta = f"{proyecto_id}/{secrets.token_hex(8)}_{Path(nombre_orig).stem}.{formato_final}"
+        ruta = (
+            f"{proyecto_id}/{secrets.token_hex(8)}_{Path(nombre_orig).stem}.{formato_final}"
+        )
         storage.save(contenido, ruta)
 
     plano_repo = PlanoRepository(db)
@@ -194,6 +200,7 @@ async def importar_plano(
         plano,
         url_firmada=_firmar(plano.ruta_storage, request),
         warning=warning,
+        cantidad_puntos=0,
     )
 
 
@@ -213,9 +220,14 @@ def listar_planos(
         current_user=current_user,
         db=db,
     )
-    planos = PlanoRepository(db).listar_por_proyecto(proyecto_id=proyecto_id)
+    plano_repo = PlanoRepository(db)
+    planos = plano_repo.listar_por_proyecto(proyecto_id=proyecto_id)
     return [
-        PlanoOut.from_plano(p, url_firmada=_firmar(p.ruta_storage, request))
+        PlanoOut.from_plano(
+            p,
+            url_firmada=_firmar(p.ruta_storage, request),
+            cantidad_puntos=plano_repo.contar_puntos(plano_id=p.id),
+        )
         for p in planos
     ]
 
@@ -236,7 +248,12 @@ def obtener_plano(
         current_user=current_user,
         db=db,
     )
-    return PlanoOut.from_plano(plano, url_firmada=_firmar(plano.ruta_storage, request))
+    plano_repo = PlanoRepository(db)
+    return PlanoOut.from_plano(
+        plano,
+        url_firmada=_firmar(plano.ruta_storage, request),
+        cantidad_puntos=plano_repo.contar_puntos(plano_id=plano.id),
+    )
 
 
 @router_planos.get(
@@ -314,7 +331,11 @@ def calibrar_plano(
         distancia_real_m=body.distancia_real_m,
         escala_m_por_px=escala,
     )
-    return PlanoOut.from_plano(plano, url_firmada=_firmar(plano.ruta_storage, request))
+    return PlanoOut.from_plano(
+        plano,
+        url_firmada=_firmar(plano.ruta_storage, request),
+        cantidad_puntos=plano_repo.contar_puntos(plano_id=plano.id),
+    )
 
 
 @router_planos.delete(

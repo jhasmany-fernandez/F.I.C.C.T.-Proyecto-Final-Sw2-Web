@@ -31,3 +31,8 @@ class Usuario(Base):
         back_populates="tecnico",
         lazy="dynamic",
     )
+    dispositivos_push = relationship(
+        "DispositivoPush",
+        back_populates="usuario",
+        cascade="all, delete-orphan",
+    )

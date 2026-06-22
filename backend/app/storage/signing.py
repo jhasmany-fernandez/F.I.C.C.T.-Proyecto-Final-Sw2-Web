@@ -13,7 +13,7 @@ from urllib.parse import quote
 
 
 def _calcular_firma(secret: str, ruta: str, exp: int) -> str:
-    mensaje = f"{ruta}|{exp}".encode()
+    mensaje = f"{ruta}|{exp}".encode("utf-8")
     return hmac.new(secret.encode("utf-8"), mensaje, hashlib.sha256).hexdigest()
 
 

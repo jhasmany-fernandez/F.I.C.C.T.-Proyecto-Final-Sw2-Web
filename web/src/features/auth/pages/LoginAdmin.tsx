@@ -5,21 +5,17 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Radio } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "@/shared/components";
-import { obtenerUltimoEmail } from "@/shared/api/authStorage";
-import { useTheme } from "@/shared/hooks/useTheme";
 import styles from "./LoginAdmin.module.css";
 
 export default function LoginAdmin() {
   const navigate = useNavigate();
   const { iniciarSesion, isLoading, error, isAuthenticated } = useAuth();
-  const { tema } = useTheme();
 
-  const [email, setEmail] = useState(() => obtenerUltimoEmail());
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [recordar, setRecordar] = useState(false);
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [errLocal, setErrLocal] = useState<string | null>(null);
 
@@ -37,8 +33,8 @@ export default function LoginAdmin() {
       return;
     }
     try {
-      await iniciarSesion(email.trim(), password, recordar);
-      // La navegación ocurre en el efecto que observa isAuthenticated.
+      await iniciarSesion(email.trim(), password);
+      navigate("/admin/usuarios", { replace: true });
     } catch {
       // El error ya está en el store
     }
@@ -50,11 +46,7 @@ export default function LoginAdmin() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.logo}>
-          <img
-            src={tema === "dark" ? "/img/logo-blanco.png" : "/img/logo-negro.png"}
-            alt="Wireless HeatMapper"
-            className={styles.logoImagen}
-          />
+          <Radio size={48} strokeWidth={1.5} aria-hidden="true" />
         </div>
         <h1 className={styles.titulo}>Wireless HeatMapper</h1>
         <p className={styles.subtitulo}>Panel Administrativo — Bulldog Tech.</p>
@@ -111,16 +103,6 @@ export default function LoginAdmin() {
               )}
             </button>
           </div>
-
-          <label className={styles.rememberMe}>
-            <input
-              type="checkbox"
-              checked={recordar}
-              onChange={(e) => setRecordar(e.target.checked)}
-              disabled={isLoading}
-            />
-            <span>Recuérdame</span>
-          </label>
 
           <Button
             type="submit"

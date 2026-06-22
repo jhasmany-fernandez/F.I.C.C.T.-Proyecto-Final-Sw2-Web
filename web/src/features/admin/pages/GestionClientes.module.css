@@ -56,14 +56,6 @@
   border-bottom: none;
 }
 
-.tabla tbody tr {
-  transition: background var(--transition-fast);
-}
-
-.tabla tbody tr:hover {
-  background: var(--bg-surface);
-}
-
 .nombreCliente {
   font-weight: 500;
 }
@@ -153,21 +145,6 @@
   box-sizing: border-box;
   background: var(--bg);
   color: var(--text-h);
-  caret-color: var(--text-h);
-  -webkit-text-fill-color: var(--text-h);
-}
-
-.input::placeholder {
-  color: var(--text-muted);
-  opacity: 1;
-}
-
-.input:-webkit-autofill,
-.input:-webkit-autofill:hover,
-.input:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--text-h);
-  box-shadow: 0 0 0 1000px var(--bg) inset;
-  transition: background-color 9999s ease-in-out 0s;
 }
 
 .input:focus {

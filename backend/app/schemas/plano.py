@@ -23,6 +23,7 @@ class PlanoOut(BaseModel):
     tamano_bytes: int
     url_firmada: str
     calibrado: bool
+    cantidad_puntos: int
     escala_m_por_px: float | None = None
     distancia_real_m: float | None = None
     calibracion_x1: float | None = None
@@ -38,11 +39,12 @@ class PlanoOut(BaseModel):
     @classmethod
     def from_plano(
         cls,
-        p: Plano,
+        p: "Plano",
         *,
         url_firmada: str,
         warning: str | None = None,
-    ) -> PlanoOut:
+        cantidad_puntos: int | None = None,
+    ) -> "PlanoOut":
         return cls(
             id=p.id,
             proyecto_id=p.proyecto_id,
@@ -53,6 +55,11 @@ class PlanoOut(BaseModel):
             tamano_bytes=p.tamano_bytes,
             url_firmada=url_firmada,
             calibrado=p.calibrado,
+            cantidad_puntos=(
+                cantidad_puntos
+                if cantidad_puntos is not None
+                else len(p.puntos_medicion)
+            ),
             escala_m_por_px=p.escala_m_por_px,
             distancia_real_m=p.distancia_real_m,
             calibracion_x1=p.calibracion_x1,
@@ -75,7 +82,7 @@ class PlanoCalibracionIn(BaseModel):
     distancia_real_m: float = Field(..., gt=0, description="Debe ser ≥ 1 metro.")
 
     @model_validator(mode="after")
-    def _validar_puntos_distintos(self) -> PlanoCalibracionIn:
+    def _validar_puntos_distintos(self) -> "PlanoCalibracionIn":
         if (self.x1, self.y1) == (self.x2, self.y2):
             raise ValueError("Los puntos de calibración deben ser distintos.")
         return self

@@ -3,15 +3,9 @@
  * Sp1-09 — PB-13 (CA-1, CA-3, CA-5).
  */
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { listarUsuarios } from "../api/usuariosApi";
-import {
-  USUARIOS_KEY,
-  useActualizarUsuario,
-  useCrearUsuario,
-} from "../hooks/useUsuarios";
+import { useActualizarUsuario, useCrearUsuario } from "../hooks/useUsuarios";
 import type { UsuarioCreate, UsuarioOut, UsuarioUpdate } from "../types";
 import { Button } from "@/shared/components";
 import { useToast } from "@/shared/components";
@@ -31,8 +25,6 @@ export default function UsuarioModal({ usuarioEditar, onCerrar }: Props) {
     rol: usuarioEditar?.rol ?? "tecnico",
   });
   const [errLocal, setErrLocal] = useState<string | null>(null);
-  const submitEnCursoRef = useRef(false);
-  const queryClient = useQueryClient();
   const { mutateAsync: crear, isPending: creando } = useCrearUsuario();
   const { mutateAsync: actualizar, isPending: actualizando } =
     useActualizarUsuario();
@@ -45,94 +37,33 @@ export default function UsuarioModal({ usuarioEditar, onCerrar }: Props) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const revalidarUsuarioPorEmail = async (emailBuscado: string) => {
-    const emailNormalizado = emailBuscado.trim().toLowerCase();
-    const pausasMs = [0, 250, 750];
-
-    for (const pausaMs of pausasMs) {
-      if (pausaMs > 0) {
-        await new Promise((resolve) => window.setTimeout(resolve, pausaMs));
-      }
-
-      const usuariosActualizados = await listarUsuarios(false);
-      queryClient.setQueryData(
-        [...USUARIOS_KEY, { soloActivos: false }],
-        usuariosActualizados,
-      );
-
-      const usuarioEncontrado = usuariosActualizados.find(
-        (usuario) => usuario.email.toLowerCase() === emailNormalizado,
-      );
-
-      if (usuarioEncontrado) {
-        return usuarioEncontrado;
-      }
-    }
-
-    return null;
-  };
-
-  const revalidarUsuarioPorId = async (usuarioId: number) => {
-    const pausasMs = [0, 250, 750];
-
-    for (const pausaMs of pausasMs) {
-      if (pausaMs > 0) {
-        await new Promise((resolve) => window.setTimeout(resolve, pausaMs));
-      }
-
-      const usuariosActualizados = await listarUsuarios(false);
-      queryClient.setQueryData(
-        [...USUARIOS_KEY, { soloActivos: false }],
-        usuariosActualizados,
-      );
-
-      const usuarioEncontrado = usuariosActualizados.find(
-        (usuario) => usuario.id === usuarioId,
-      );
-
-      if (usuarioEncontrado) {
-        return usuarioEncontrado;
-      }
-    }
-
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Evita dobles envíos antes de que React Query alcance a marcar isPending.
-    if (submitEnCursoRef.current) {
-      return;
-    }
-
-    submitEnCursoRef.current = true;
     setErrLocal(null);
-    let usuarioExistiaAntes = false;
-    let datosEdicion: UsuarioUpdate | null = null;
 
-    try {
-      if (esEdicion) {
-        if (!form.nombre.trim() || !form.email.trim()) {
-          setErrLocal("Nombre y correo son obligatorios.");
-          return;
-        }
-        if (form.password && form.password.length < 8) {
-          setErrLocal("La contraseña debe tener al menos 8 caracteres.");
-          return;
-        }
-        datosEdicion = {
-          nombre: form.nombre.trim(),
-          email: form.email.trim(),
-          rol: form.rol as "admin" | "tecnico",
-        };
-        if (form.password) datosEdicion.password = form.password;
-        await actualizar({ id: usuarioEditar!.id, datos: datosEdicion });
-        toast.exito("Usuario actualizado correctamente.");
-        onCerrar();
+    if (esEdicion) {
+      if (!form.nombre.trim() || !form.email.trim()) {
+        setErrLocal("Nombre y correo son obligatorios.");
         return;
       }
-
+      if (form.password && form.password.length < 8) {
+        setErrLocal("La contraseña debe tener al menos 8 caracteres.");
+        return;
+      }
+      const datos: UsuarioUpdate = {
+        nombre: form.nombre.trim(),
+        email: form.email.trim(),
+        rol: form.rol as "admin" | "tecnico",
+      };
+      if (form.password) datos.password = form.password;
+      try {
+        await actualizar({ id: usuarioEditar!.id, datos });
+        toast.exito("Usuario actualizado correctamente.");
+        onCerrar();
+      } catch (err: unknown) {
+        setErrLocal(_extraerDetalle(err) ?? "Error al actualizar el usuario.");
+      }
+    } else {
       if (!form.nombre.trim() || !form.email.trim() || !form.password) {
         setErrLocal("Todos los campos son obligatorios.");
         return;
@@ -141,66 +72,14 @@ export default function UsuarioModal({ usuarioEditar, onCerrar }: Props) {
         setErrLocal("La contraseña debe tener al menos 8 caracteres.");
         return;
       }
-
-      const datos: UsuarioCreate = {
-        nombre: form.nombre.trim(),
-        email: form.email.trim(),
-        password: form.password,
-        rol: form.rol as "admin" | "tecnico",
-      };
-      const usuariosAntes =
-        queryClient.getQueryData<UsuarioOut[]>([
-          ...USUARIOS_KEY,
-          { soloActivos: false },
-        ]) ?? [];
-      usuarioExistiaAntes = usuariosAntes.some(
-        (usuario) => usuario.email.toLowerCase() === datos.email.toLowerCase(),
-      );
-
-      await crear(datos);
-      toast.exito("Usuario creado correctamente.");
-      onCerrar();
-    } catch (err: unknown) {
-      if (esEdicion && usuarioEditar && datosEdicion) {
-        try {
-          const usuarioActualizado = await revalidarUsuarioPorId(
-            usuarioEditar.id,
-          );
-          const coincideConCambios =
-            usuarioActualizado?.nombre === datosEdicion.nombre &&
-            usuarioActualizado?.email === datosEdicion.email &&
-            usuarioActualizado?.rol === datosEdicion.rol;
-
-          if (coincideConCambios) {
-            queryClient.invalidateQueries({ queryKey: USUARIOS_KEY });
-            toast.exito("Usuario actualizado correctamente.");
-            onCerrar();
-            return;
-          }
-        } catch {
-          // Si tampoco podemos revalidar contra el backend, mostramos el error original.
-        }
-      } else if (!esEdicion) {
-        try {
-          const creadoTrasError = await revalidarUsuarioPorEmail(form.email);
-
-          if (creadoTrasError && !usuarioExistiaAntes) {
-            queryClient.invalidateQueries({ queryKey: USUARIOS_KEY });
-            toast.exito("Usuario creado correctamente.");
-            onCerrar();
-            return;
-          }
-        } catch {
-          // Si tampoco podemos revalidar contra el backend, mostramos el error original.
-        }
+      try {
+        await crear(form as UsuarioCreate);
+        toast.exito("Usuario creado correctamente.");
+        onCerrar();
+      } catch (err: unknown) {
+        const detail = _extraerDetalle(err);
+        setErrLocal(detail ?? "Error al crear el usuario.");
       }
-
-      const fallback = esEdicion
-        ? "Error al actualizar el usuario."
-        : "Error al crear el usuario.";
-      setErrLocal(_extraerDetalle(err) ?? fallback);
-    } finally {
-      submitEnCursoRef.current = false;
     }
   };
 

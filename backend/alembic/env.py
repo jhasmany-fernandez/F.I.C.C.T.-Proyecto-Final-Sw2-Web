@@ -1,17 +1,13 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config, pool
-
 from alembic import context
 from app.core.config import settings
 from app.core.database import Base
 
 # Importar todos los modelos para que Alembic los detecte en autogenerate
-from app.models import (
-    proyecto,  # noqa: F401
-    refresh_token,  # noqa: F401
-    usuario,  # noqa: F401
-)
+from app.models import usuario  # noqa: F401
+from app.models import refresh_token  # noqa: F401
+from app.models import proyecto  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

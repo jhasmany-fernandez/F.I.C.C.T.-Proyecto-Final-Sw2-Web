@@ -42,7 +42,9 @@ class MedicionItemIn(BaseModel):
     def _normalizar_bssid(cls, v: str) -> str:
         v = v.strip().lower()
         if not _BSSID_RE.match(v):
-            raise ValueError("El campo bssid debe tener formato AA:BB:CC:DD:EE:FF.")
+            raise ValueError(
+                "El campo bssid debe tener formato AA:BB:CC:DD:EE:FF."
+            )
         return v
 
 
@@ -106,6 +108,13 @@ class PuntoMedicionDetalleOut(BaseModel):
     mediciones: list[MedicionWifiOut]
 
     model_config = {"from_attributes": True}
+
+
+class PuntoMedicionUpdateIn(BaseModel):
+    """Cuerpo para mover un punto de medición existente sobre el plano."""
+
+    pos_x: float = Field(..., ge=0, description="Posición X en píxeles del plano")
+    pos_y: float = Field(..., ge=0, description="Posición Y en píxeles del plano")
 
 
 class LoteMedicionOut(BaseModel):

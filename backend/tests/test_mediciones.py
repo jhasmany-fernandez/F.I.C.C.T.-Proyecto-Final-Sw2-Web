@@ -7,6 +7,10 @@ import pytest
 from PIL import Image
 
 from app.core.config import settings
+from app.models.cliente import Cliente
+from app.models.plano import Plano
+from app.models.proyecto import Proyecto
+
 
 # ---------------------------------------------------------------------------
 # Fixtures de apoyo
@@ -17,9 +21,7 @@ from app.core.config import settings
 def storage_temporal(monkeypatch):
     with tempfile.TemporaryDirectory() as tmp:
         monkeypatch.setattr(settings, "storage_root", tmp)
-        monkeypatch.setattr(
-            settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx"
-        )
+        monkeypatch.setattr(settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx")
         monkeypatch.setattr(settings, "storage_url_ttl_seconds", 60)
         monkeypatch.setattr(settings, "public_api_url", "")
         yield tmp
@@ -365,6 +367,61 @@ def test_detalle_punto_incluye_mediciones(client, tecnico_token):
     assert len(body["mediciones"]) == 2
     # Primero el de mayor RSSI (menos negativo)
     assert body["mediciones"][0]["rssi"] >= body["mediciones"][1]["rssi"]
+
+
+def test_mover_punto_actualiza_posicion_y_preserva_mediciones(client, tecnico_token):
+    """Mover punto → nuevas coordenadas y mismas mediciones."""
+    pid = _crear_proyecto(client, tecnico_token)
+    plano_id = _subir_plano_calibrado(client, tecnico_token, pid)
+
+    r = client.post(
+        "/mediciones",
+        json=_lote_valido(plano_id),
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    assert r.status_code == 201
+    punto_id = r.json()["punto_id"]
+
+    r2 = client.patch(
+        f"/puntos/{punto_id}",
+        json={"pos_x": 123.5, "pos_y": 456.25},
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+
+    assert r2.status_code == 200
+    body = r2.json()
+    assert body["id"] == punto_id
+    assert body["pos_x"] == 123.5
+    assert body["pos_y"] == 456.25
+    assert len(body["mediciones"]) == 2
+
+    r3 = client.get(
+        f"/planos/{plano_id}/puntos",
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    punto = next(item for item in r3.json() if item["id"] == punto_id)
+    assert punto["pos_x"] == 123.5
+    assert punto["pos_y"] == 456.25
+
+
+def test_mover_punto_ajeno_retorna_404(client, tecnico_token, admin_token):
+    """Ownership: intentar mover punto ajeno → 404."""
+    pid = _crear_proyecto(client, tecnico_token)
+    plano_id = _subir_plano_calibrado(client, tecnico_token, pid)
+
+    r = client.post(
+        "/mediciones",
+        json=_lote_valido(plano_id),
+        headers={"Authorization": f"Bearer {tecnico_token}"},
+    )
+    punto_id = r.json()["punto_id"]
+
+    r2 = client.patch(
+        f"/puntos/{punto_id}",
+        json={"pos_x": 10, "pos_y": 20},
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+    assert r2.status_code == 404
 
 
 def test_eliminar_punto_retorna_204(client, tecnico_token):

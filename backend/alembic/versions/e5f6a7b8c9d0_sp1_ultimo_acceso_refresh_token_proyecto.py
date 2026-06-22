@@ -6,16 +6,15 @@ Create Date: 2026-04-24
 Sprint 1 — PB-09 (refresh tokens), PB-13 (ultimo_acceso), PB-18 (proyectos)
 """
 
-from collections.abc import Sequence
+from typing import Sequence, Union
 
 import sqlalchemy as sa
-
 from alembic import op
 
 revision: str = "e5f6a7b8c9d0"
-down_revision: str | None = "d4e5f6a7b8c9"
-branch_labels: str | Sequence[str] | None = None
-depends_on: str | Sequence[str] | None = None
+down_revision: Union[str, None] = "d4e5f6a7b8c9"
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:

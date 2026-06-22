@@ -22,7 +22,6 @@
 
 .tablaWrapper {
   background: var(--bg);
-  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow-x: auto;
@@ -53,14 +52,6 @@
 
 .tabla tr:last-child td {
   border-bottom: none;
-}
-
-.tabla tbody tr {
-  transition: background var(--transition-fast);
-}
-
-.tabla tbody tr:hover {
-  background: var(--bg-surface);
 }
 
 .acciones {

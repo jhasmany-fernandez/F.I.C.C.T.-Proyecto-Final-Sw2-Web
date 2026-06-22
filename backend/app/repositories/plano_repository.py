@@ -5,6 +5,7 @@ Sprint 2 — PB-02 (Importar Plano), PB-11 (Calibrar Escala).
 
 from sqlalchemy.orm import Session
 
+from app.models.medicion import PuntoMedicion
 from app.models.plano import Plano
 
 
@@ -24,7 +25,11 @@ class PlanoRepository:
         return self._db.query(Plano).filter(Plano.id == plano_id).first()
 
     def obtener_por_ruta(self, *, ruta_storage: str) -> Plano | None:
-        return self._db.query(Plano).filter(Plano.ruta_storage == ruta_storage).first()
+        return (
+            self._db.query(Plano)
+            .filter(Plano.ruta_storage == ruta_storage)
+            .first()
+        )
 
     def crear(
         self,
@@ -77,5 +82,8 @@ class PlanoRepository:
         self._db.commit()
 
     def contar_puntos(self, *, plano_id: int) -> int:
-        """Placeholder hasta el Sprint 3 (tabla 'punto_medicion' aún no existe)."""
-        return 0
+        return (
+            self._db.query(PuntoMedicion)
+            .filter(PuntoMedicion.plano_id == plano_id)
+            .count()
+        )
