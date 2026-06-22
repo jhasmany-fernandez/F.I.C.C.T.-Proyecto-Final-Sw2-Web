@@ -6,45 +6,63 @@
 import { create } from "zustand";
 import { login as apiLogin, logout as apiLogout } from "../api/authApi";
 import type { AuthState, UsuarioOut } from "../types";
-import { STORAGE_REFRESH } from "@/shared/api/client";
+import {
+  STORAGE_REFRESH,
+  STORAGE_USER,
+  guardarUltimoEmail,
+  guardarUsuario,
+  haySesionGuardada,
+  limpiarSesion,
+  obtenerToken,
+  obtenerUsuarioGuardado,
+} from "@/shared/api/authStorage";
 
 interface AuthStore extends AuthState {
-  iniciarSesion: (email: string, password: string) => Promise<void>;
+  iniciarSesion: (
+    email: string,
+    password: string,
+    recordar: boolean,
+  ) => Promise<void>;
   cerrarSesion: () => Promise<void>;
-  /** Carga el usuario desde localStorage si hay un token activo. */
-  cargarSesion: () => void;
+}
+
+/**
+ * Lee la sesión guardada en localStorage de forma síncrona.
+ * Se ejecuta al crear el store para que el primer render ya conozca
+ * el estado real de autenticación (evita pantallas en blanco que
+ * solo se corrigen recargando la página).
+ */
+function sesionInicial(): Pick<AuthState, "usuario" | "isAuthenticated"> {
+  const raw = obtenerUsuarioGuardado();
+  const tieneToken = haySesionGuardada();
+
+  if (raw && tieneToken) {
+    try {
+      return { usuario: JSON.parse(raw) as UsuarioOut, isAuthenticated: true };
+    } catch {
+      limpiarSesion();
+    }
+  } else if (raw && !tieneToken) {
+    // Sesión inconsistente: hay perfil guardado pero los tokens expiraron o
+    // fueron eliminados. Limpiar para evitar el bucle login ↔ usuarios.
+    localStorage.removeItem(STORAGE_USER);
+    sessionStorage.removeItem(STORAGE_USER);
+  }
+
+  return { usuario: null, isAuthenticated: false };
 }
 
 export const useAuth = create<AuthStore>((set) => ({
-  usuario: null,
-  isAuthenticated: false,
+  ...sesionInicial(),
   isLoading: false,
   error: null,
 
-  cargarSesion: () => {
-    // El token existe: se verifica mediante el interceptor en la primera petición
-    // Para el usuario, no hay un endpoint /me en Sprint 1 — se carga desde localStorage
-    const raw = localStorage.getItem("usuario");
-    const tieneToken = !!localStorage.getItem(STORAGE_REFRESH);
-    if (raw && tieneToken) {
-      try {
-        const usuario: UsuarioOut = JSON.parse(raw);
-        set({ usuario, isAuthenticated: true });
-      } catch {
-        localStorage.removeItem("usuario");
-      }
-    } else if (raw && !tieneToken) {
-      // Sesión inconsistente: hay perfil guardado pero los tokens expiraron o
-      // fueron eliminados. Limpiar para evitar el bucle login ↔ usuarios.
-      localStorage.removeItem("usuario");
-    }
-  },
-
-  iniciarSesion: async (email, password) => {
+  iniciarSesion: async (email, password, recordar) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await apiLogin({ email, password });
-      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      const data = await apiLogin({ email, password }, recordar);
+      guardarUsuario(data.usuario);
+      guardarUltimoEmail(email);
       set({
         usuario: data.usuario,
         isAuthenticated: true,
@@ -59,11 +77,11 @@ export const useAuth = create<AuthStore>((set) => ({
   },
 
   cerrarSesion: async () => {
-    const refreshToken = localStorage.getItem(STORAGE_REFRESH) ?? "";
+    const refreshToken = obtenerToken(STORAGE_REFRESH) ?? "";
     try {
       if (refreshToken) await apiLogout(refreshToken);
     } finally {
-      localStorage.removeItem("usuario");
+      limpiarSesion();
       set({ usuario: null, isAuthenticated: false, error: null });
     }
   },

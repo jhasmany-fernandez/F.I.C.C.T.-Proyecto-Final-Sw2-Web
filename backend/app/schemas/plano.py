@@ -38,11 +38,11 @@ class PlanoOut(BaseModel):
     @classmethod
     def from_plano(
         cls,
-        p: "Plano",
+        p: Plano,
         *,
         url_firmada: str,
         warning: str | None = None,
-    ) -> "PlanoOut":
+    ) -> PlanoOut:
         return cls(
             id=p.id,
             proyecto_id=p.proyecto_id,
@@ -75,7 +75,7 @@ class PlanoCalibracionIn(BaseModel):
     distancia_real_m: float = Field(..., gt=0, description="Debe ser ≥ 1 metro.")
 
     @model_validator(mode="after")
-    def _validar_puntos_distintos(self) -> "PlanoCalibracionIn":
+    def _validar_puntos_distintos(self) -> PlanoCalibracionIn:
         if (self.x1, self.y1) == (self.x2, self.y2):
             raise ValueError("Los puntos de calibración deben ser distintos.")
         return self

@@ -37,7 +37,7 @@ class ProyectoTecnicoOut(BaseModel):
     model_config = {"from_attributes": True}
 
     @classmethod
-    def from_proyecto(cls, p: "Proyecto") -> "ProyectoTecnicoOut":
+    def from_proyecto(cls, p: Proyecto) -> ProyectoTecnicoOut:
         return cls(
             id=p.id,
             nombre=p.nombre,

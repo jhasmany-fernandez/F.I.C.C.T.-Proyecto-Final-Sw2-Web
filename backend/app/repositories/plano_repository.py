@@ -24,11 +24,7 @@ class PlanoRepository:
         return self._db.query(Plano).filter(Plano.id == plano_id).first()
 
     def obtener_por_ruta(self, *, ruta_storage: str) -> Plano | None:
-        return (
-            self._db.query(Plano)
-            .filter(Plano.ruta_storage == ruta_storage)
-            .first()
-        )
+        return self._db.query(Plano).filter(Plano.ruta_storage == ruta_storage).first()
 
     def crear(
         self,

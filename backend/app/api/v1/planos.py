@@ -176,9 +176,7 @@ async def importar_plano(
                 detail="La imagen está corrupta o no es válida.",
             ) from exc
         tamano_bytes = len(contenido)
-        ruta = (
-            f"{proyecto_id}/{secrets.token_hex(8)}_{Path(nombre_orig).stem}.{formato_final}"
-        )
+        ruta = f"{proyecto_id}/{secrets.token_hex(8)}_{Path(nombre_orig).stem}.{formato_final}"
         storage.save(contenido, ruta)
 
     plano_repo = PlanoRepository(db)

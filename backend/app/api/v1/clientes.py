@@ -91,7 +91,9 @@ def actualizar_cliente(
     repo = ClienteRepository(db)
     cliente = repo.obtener_por_id(cliente_id)
     if not cliente:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Cliente no encontrado"
+        )
     try:
         cliente = repo.actualizar(cliente, nombre=payload.nombre, activo=payload.activo)
         db.commit()
@@ -119,7 +121,9 @@ def desactivar_cliente(
     repo = ClienteRepository(db)
     cliente = repo.obtener_por_id(cliente_id)
     if not cliente:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Cliente no encontrado"
+        )
     cliente = repo.actualizar(cliente, activo=False)
     db.commit()
     db.refresh(cliente)

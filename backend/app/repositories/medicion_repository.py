@@ -125,9 +125,7 @@ class MedicionRepository:
     def obtener_punto_por_id(self, *, punto_id: int) -> PuntoMedicion | None:
         """Retorna el punto con sus mediciones cargadas (eager via relationship)."""
         return (
-            self._db.query(PuntoMedicion)
-            .filter(PuntoMedicion.id == punto_id)
-            .first()
+            self._db.query(PuntoMedicion).filter(PuntoMedicion.id == punto_id).first()
         )
 
     # ------------------------------------------------------------------

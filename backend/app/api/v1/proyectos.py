@@ -80,7 +80,9 @@ def actualizar_proyecto(
     repo = ProyectoRepository(db)
     proyecto = repo.obtener_por_id(proyecto_id=proyecto_id, tecnico_id=current_user.id)
     if proyecto is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado."
+        )
     proyecto = repo.actualizar(
         proyecto=proyecto,
         nombre=body.nombre,
@@ -104,7 +106,9 @@ def archivar_proyecto(
     repo = ProyectoRepository(db)
     proyecto = repo.obtener_por_id(proyecto_id=proyecto_id, tecnico_id=current_user.id)
     if proyecto is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado."
+        )
     proyecto = repo.archivar(proyecto=proyecto)
     return ProyectoTecnicoOut.from_proyecto(proyecto)
 
@@ -123,5 +127,7 @@ def eliminar_proyecto(
     repo = ProyectoRepository(db)
     proyecto = repo.obtener_por_id(proyecto_id=proyecto_id, tecnico_id=current_user.id)
     if proyecto is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado."
+        )
     repo.eliminar(proyecto=proyecto)

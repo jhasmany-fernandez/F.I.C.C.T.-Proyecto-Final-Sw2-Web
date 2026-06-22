@@ -7,10 +7,6 @@ import pytest
 from PIL import Image
 
 from app.core.config import settings
-from app.models.cliente import Cliente
-from app.models.plano import Plano
-from app.models.proyecto import Proyecto
-
 
 # ---------------------------------------------------------------------------
 # Fixtures de apoyo
@@ -21,7 +17,9 @@ from app.models.proyecto import Proyecto
 def storage_temporal(monkeypatch):
     with tempfile.TemporaryDirectory() as tmp:
         monkeypatch.setattr(settings, "storage_root", tmp)
-        monkeypatch.setattr(settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx")
+        monkeypatch.setattr(
+            settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx"
+        )
         monkeypatch.setattr(settings, "storage_url_ttl_seconds", 60)
         monkeypatch.setattr(settings, "public_api_url", "")
         yield tmp

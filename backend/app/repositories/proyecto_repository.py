@@ -12,7 +12,6 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.proyecto import Proyecto
-from app.models.usuario import Usuario
 
 
 class ProyectoRepository:
@@ -53,9 +52,8 @@ class ProyectoRepository:
         fecha_hasta: date | None = None,
     ) -> tuple[list[Proyecto], int]:
         """Retorna (proyectos, total) con joins a tecnico y cliente para la vista de admin."""
-        q = (
-            self._db.query(Proyecto)
-            .options(joinedload(Proyecto.tecnico), joinedload(Proyecto.cliente))
+        q = self._db.query(Proyecto).options(
+            joinedload(Proyecto.tecnico), joinedload(Proyecto.cliente)
         )
 
         if tecnico_id is not None:
@@ -63,9 +61,13 @@ class ProyectoRepository:
         if estado is not None:
             q = q.filter(Proyecto.estado == estado)
         if fecha_desde is not None:
-            q = q.filter(func.date(Proyecto.ultima_actividad) >= fecha_desde.isoformat())
+            q = q.filter(
+                func.date(Proyecto.ultima_actividad) >= fecha_desde.isoformat()
+            )
         if fecha_hasta is not None:
-            q = q.filter(func.date(Proyecto.ultima_actividad) <= fecha_hasta.isoformat())
+            q = q.filter(
+                func.date(Proyecto.ultima_actividad) <= fecha_hasta.isoformat()
+            )
 
         total = q.count()
         items = (
@@ -123,7 +125,9 @@ class ProyectoRepository:
         proyecto.descripcion = descripcion
         self._db.commit()
         self._db.refresh(proyecto)
-        return self.obtener_por_id(proyecto_id=proyecto.id, tecnico_id=proyecto.tecnico_id)  # type: ignore[return-value]
+        return self.obtener_por_id(
+            proyecto_id=proyecto.id, tecnico_id=proyecto.tecnico_id
+        )  # type: ignore[return-value]
 
     def obtener_por_id_admin(self, *, proyecto_id: int) -> Proyecto | None:
         """Retorna el proyecto por id sin restricción de técnico. Solo para uso admin. PB-18."""
@@ -141,7 +145,9 @@ class ProyectoRepository:
         self._db.refresh(proyecto)
         return proyecto
 
-    def reasignar_tecnico(self, *, proyecto: Proyecto, nuevo_tecnico_id: int) -> Proyecto:
+    def reasignar_tecnico(
+        self, *, proyecto: Proyecto, nuevo_tecnico_id: int
+    ) -> Proyecto:
         """Reasigna el proyecto a otro técnico activo. Solo admin. PB-18."""
         proyecto.tecnico_id = nuevo_tecnico_id
         self._db.commit()

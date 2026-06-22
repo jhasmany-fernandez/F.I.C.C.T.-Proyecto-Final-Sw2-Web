@@ -42,9 +42,7 @@ class MedicionItemIn(BaseModel):
     def _normalizar_bssid(cls, v: str) -> str:
         v = v.strip().lower()
         if not _BSSID_RE.match(v):
-            raise ValueError(
-                "El campo bssid debe tener formato AA:BB:CC:DD:EE:FF."
-            )
+            raise ValueError("El campo bssid debe tener formato AA:BB:CC:DD:EE:FF.")
         return v
 
 

@@ -3,9 +3,12 @@
  * Sp1-35 — PB-19 (CA-1, CA-2, CA-3, CA-4, CA-5).
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
+import { listarTodosClientes } from "../api/clientesApi";
 import {
+  CLIENTES_KEY,
   useActualizarCliente,
   useClientes,
   useCrearCliente,
@@ -17,6 +20,7 @@ import { useToast } from "@/shared/components";
 import styles from "./GestionClientes.module.css";
 
 export default function GestionClientes() {
+  const queryClient = useQueryClient();
   const { data: clientes, isLoading, isError } = useClientes();
   const { mutateAsync: crearCliente, isPending: creando } = useCrearCliente();
   const { mutateAsync: desactivar } = useDesactivarCliente();
@@ -33,11 +37,93 @@ export default function GestionClientes() {
     null,
   );
   const [desactivando, setDesactivando] = useState(false);
+  const submitCrearEnCursoRef = useRef(false);
+  const submitEditarEnCursoRef = useRef(false);
+
+  const revalidarClientePorNombre = async (nombreBuscado: string) => {
+    const nombreNormalizado = nombreBuscado.trim().toLowerCase();
+    const pausasMs = [0, 250, 750];
+
+    for (const pausaMs of pausasMs) {
+      if (pausaMs > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, pausaMs));
+      }
+
+      const clientesActualizados = await listarTodosClientes();
+      queryClient.setQueryData(CLIENTES_KEY, clientesActualizados);
+
+      const clienteEncontrado = clientesActualizados.find(
+        (cliente) =>
+          cliente.nombre.trim().toLowerCase() === nombreNormalizado,
+      );
+
+      if (clienteEncontrado) {
+        return clienteEncontrado;
+      }
+    }
+
+    return null;
+  };
+
+  const revalidarClientePorId = async (clienteId: number) => {
+    const pausasMs = [0, 250, 750];
+
+    for (const pausaMs of pausasMs) {
+      if (pausaMs > 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, pausaMs));
+      }
+
+      const clientesActualizados = await listarTodosClientes();
+      queryClient.setQueryData(CLIENTES_KEY, clientesActualizados);
+
+      const clienteEncontrado = clientesActualizados.find(
+        (cliente) => cliente.id === clienteId,
+      );
+
+      if (clienteEncontrado) {
+        return clienteEncontrado;
+      }
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    if (!mostrarModal || !nombre.trim() || !clientes?.length) return;
+
+    const nombreNormalizado = nombre.trim().toLowerCase();
+    const clienteVisible = clientes.find(
+      (cliente) => cliente.nombre.trim().toLowerCase() === nombreNormalizado,
+    );
+
+    if (!clienteVisible) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setErrorModal(null);
+      setNombre("");
+      setMostrarModal(false);
+
+      if (submitCrearEnCursoRef.current) {
+        toast.exito(`Cliente "${clienteVisible.nombre}" creado correctamente.`);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [clientes, mostrarModal, nombre, toast]);
 
   const handleCrear = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nombre.trim()) return;
+    if (submitCrearEnCursoRef.current) return;
+
+    submitCrearEnCursoRef.current = true;
     setErrorModal(null);
+    const nombreNormalizado = nombre.trim().toLowerCase();
+    const clientesAntes = queryClient.getQueryData<ClienteOut[]>(CLIENTES_KEY) ?? [];
+    const clienteExistiaAntes = clientesAntes.some(
+      (cliente) => cliente.nombre.trim().toLowerCase() === nombreNormalizado,
+    );
+
     try {
       await crearCliente({ nombre: nombre.trim() });
       toast.exito(`Cliente "${nombre.trim()}" creado correctamente.`);
@@ -46,11 +132,35 @@ export default function GestionClientes() {
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response
         ?.status;
+      try {
+        const clienteTrasError = await revalidarClientePorNombre(nombre.trim());
+
+        if (clienteTrasError) {
+          queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+
+          if (status === 409 && clienteExistiaAntes) {
+            toast.info(`El cliente "${nombre.trim()}" ya estaba registrado.`);
+          } else if (status === 409) {
+            toast.info(`El cliente "${nombre.trim()}" ya existe en el sistema.`);
+          } else {
+            toast.exito(`Cliente "${nombre.trim()}" creado correctamente.`);
+          }
+
+          setNombre("");
+          setMostrarModal(false);
+          return;
+        }
+      } catch {
+        // Si tampoco se puede revalidar contra backend, mostramos el error original.
+      }
+
       if (status === 409) {
         setErrorModal(`Ya existe un cliente con el nombre "${nombre.trim()}".`);
       } else {
         setErrorModal("Ocurrió un error al crear el cliente.");
       }
+    } finally {
+      submitCrearEnCursoRef.current = false;
     }
   };
 
@@ -80,7 +190,12 @@ export default function GestionClientes() {
   const handleEditar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nombreEditar.trim() || !clienteEditar) return;
+    if (submitEditarEnCursoRef.current) return;
+
+    submitEditarEnCursoRef.current = true;
     setErrorEditar(null);
+    const nombreNormalizado = nombreEditar.trim().toLowerCase();
+
     try {
       await actualizarCliente({
         id: clienteEditar.id,
@@ -96,8 +211,26 @@ export default function GestionClientes() {
           `Ya existe un cliente con el nombre "${nombreEditar.trim()}".`,
         );
       } else {
+        try {
+          const clienteActualizado = await revalidarClientePorId(clienteEditar.id);
+
+          if (
+            clienteActualizado &&
+            clienteActualizado.nombre.trim().toLowerCase() === nombreNormalizado
+          ) {
+            queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+            toast.exito("Cliente actualizado correctamente.");
+            setClienteEditar(null);
+            return;
+          }
+        } catch {
+          // Si tampoco se puede revalidar contra backend, mostramos el error original.
+        }
+
         setErrorEditar("Ocurrió un error al actualizar el cliente.");
       }
+    } finally {
+      submitEditarEnCursoRef.current = false;
     }
   };
 

@@ -3,7 +3,7 @@
 PB-09 — Sprint 1 (Sp1-04, Sp1-13, Sp1-14, Sp1-15).
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -45,7 +45,7 @@ class AuthService:
             )
 
         # Actualizar último acceso (diagrama de secuencia PB-09)
-        usuario.ultimo_acceso = datetime.now(timezone.utc)
+        usuario.ultimo_acceso = datetime.now(UTC)
         self._db.commit()
 
         access_token = create_access_token({"sub": str(usuario.id)})
@@ -70,9 +70,9 @@ class AuthService:
         # Normalizar timezone para comparación (SQLite no guarda tzinfo)
         expires_at = record.expires_at
         if expires_at.tzinfo is None:
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
+            expires_at = expires_at.replace(tzinfo=UTC)
 
-        if expires_at < datetime.now(timezone.utc):
+        if expires_at < datetime.now(UTC):
             self._token_repo.revocar(request.refresh_token)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

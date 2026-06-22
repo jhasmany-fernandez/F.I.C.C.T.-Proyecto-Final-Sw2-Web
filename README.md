@@ -37,6 +37,8 @@ Servicios disponibles tras `docker compose up`:
 | API REST (FastAPI)    | http://localhost/api      |
 | Documentación OpenAPI | http://localhost/api/docs |
 
+Si levantas con el override local `docker-compose.local.yml`, el proxy Nginx se publica en `http://localhost:8081` y el backend directo en `http://localhost:8001` para evitar conflicto con puertos `80`, `8080` y `8000` ya ocupados en esta VM.
+
 ---
 
 ## Desarrollo local por componente

@@ -11,7 +11,7 @@ import {
 } from "../api/usuariosApi";
 import type { UsuarioCreate, UsuarioUpdate } from "../types";
 
-const USUARIOS_KEY = ["admin", "usuarios"] as const;
+export const USUARIOS_KEY = ["admin", "usuarios"] as const;
 
 export function useUsuarios(soloActivos = false) {
   return useQuery({

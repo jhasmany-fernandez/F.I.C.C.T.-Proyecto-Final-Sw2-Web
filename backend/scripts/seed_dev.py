@@ -51,9 +51,17 @@ CLIENTES_PRUEBA = [
 ]
 
 PROYECTOS_PRUEBA = [
-    {"nombre": "Oficinas Central Bulldog Tech.", "cliente": "Bulldog Tech.", "estado": "en_progreso"},
+    {
+        "nombre": "Oficinas Central Bulldog Tech.",
+        "cliente": "Bulldog Tech.",
+        "estado": "en_progreso",
+    },
     {"nombre": "Sucursal Norte", "cliente": "Bulldog Tech.", "estado": "completado"},
-    {"nombre": "Almacén Logístico", "cliente": "Cliente Beta S.A.", "estado": "en_progreso"},
+    {
+        "nombre": "Almacén Logístico",
+        "cliente": "Cliente Beta S.A.",
+        "estado": "en_progreso",
+    },
 ]
 
 
@@ -95,7 +103,9 @@ def seed() -> None:
         # Proyectos (asignados al técnico demo)
         tecnico = db.query(Usuario).filter_by(email="tecnico@bulldogtech.bo").first()
         if tecnico:
-            proyectos_existentes = db.query(Proyecto).filter_by(tecnico_id=tecnico.id).count()
+            proyectos_existentes = (
+                db.query(Proyecto).filter_by(tecnico_id=tecnico.id).count()
+            )
             if proyectos_existentes == 0:
                 for datos in PROYECTOS_PRUEBA:
                     proyecto = Proyecto(
@@ -107,8 +117,6 @@ def seed() -> None:
                     db.add(proyecto)
                     print(f"[seed_dev] Proyecto creado: {datos['nombre']}")
                 db.commit()
-
-
 
     print("[seed_dev] Seed completado.")
 

@@ -16,7 +16,9 @@ from app.storage.signing import generar_url_firmada, verificar_firma
 def storage_temporal(monkeypatch):
     with tempfile.TemporaryDirectory() as tmp:
         monkeypatch.setattr(settings, "storage_root", tmp)
-        monkeypatch.setattr(settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx")
+        monkeypatch.setattr(
+            settings, "storage_url_secret", "test_secret_32chars_minimo_xxxxxx"
+        )
         monkeypatch.setattr(settings, "storage_url_ttl_seconds", 60)
         monkeypatch.setattr(settings, "public_api_url", "")
         yield tmp
@@ -304,9 +306,12 @@ def test_url_firmada_manipulada(client, tecnico_token):
 
 
 def test_verificar_firma_unit():
-    assert verificar_firma(
-        ruta_relativa="x.png",
-        secret="s",
-        exp=int(time.time()) + 60,
-        sig="bad",
-    ) is False
+    assert (
+        verificar_firma(
+            ruta_relativa="x.png",
+            secret="s",
+            exp=int(time.time()) + 60,
+            sig="bad",
+        )
+        is False
+    )

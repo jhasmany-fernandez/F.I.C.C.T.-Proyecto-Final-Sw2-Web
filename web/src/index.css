@@ -1,7 +1,10 @@
 /* =========================================================
    Design tokens — Wireless HeatMapper Web
+   Tema claro (por defecto) y oscuro vía [data-theme="dark"]
    ========================================================= */
 :root {
+  color-scheme: light;
+
   /* --- Tipografía --- */
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
@@ -56,13 +59,14 @@
   --color-muted-bg: #e2e8f0;
   --color-muted-text: #4a5568;
 
-  /* --- Navegación lateral --- */
-  --nav-bg: #1a202c;
-  --nav-border: #2d3748;
-  --nav-text: #a0aec0;
-  --nav-text-active: #ffffff;
-  --nav-item-hover: #2d3748;
-  --nav-item-active: var(--color-primary);
+  /* --- Navegación lateral (clara: fondo blanco, texto oscuro) --- */
+  --nav-bg: #ffffff;
+  --nav-border: var(--border);
+  --nav-text: var(--text);
+  --nav-text-active: var(--text-h);
+  --nav-item-hover: var(--bg-surface);
+  --nav-item-active-bg: var(--color-primary-bg);
+  --nav-item-active-text: var(--color-primary);
 
   /* --- Radios --- */
   --radius-sm: 5px;
@@ -73,27 +77,64 @@
 
   /* --- Transiciones --- */
   --transition-fast: 0.15s;
+  --transition-theme: 0.2s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16171d;
-    --bg-page: #0f1016;
-    --bg-surface: #1f2028;
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --text-muted: #6b7280;
-    --border: #2e303a;
-    --border-light: #252630;
-    --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.25);
-    --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --nav-bg: #111318;
-    --nav-border: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-  }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #16171d;
+  --bg-page: #0f1016;
+  --bg-surface: #1f2028;
+  --text: #9ca3af;
+  --text-h: #f3f4f6;
+  --text-muted: #6b7280;
+  --border: #2e303a;
+  --border-light: #252630;
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /* --- Color primario (algo más claro para contraste sobre fondos oscuros) --- */
+  --color-primary: #3b9ce0;
+  --color-primary-hover: #5dade2;
+  --color-primary-disabled: #2d5a78;
+  --color-primary-bg: rgba(59, 156, 224, 0.16);
+
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+
+  /* --- Semánticos de estado (fondos oscuros translúcidos + texto claro) --- */
+  --color-success: #68d391;
+  --color-success-bg: rgba(72, 187, 120, 0.14);
+  --color-success-border: rgba(72, 187, 120, 0.35);
+
+  --color-danger: #fc8181;
+  --color-danger-hover: #f56565;
+  --color-danger-bg: rgba(229, 62, 62, 0.14);
+  --color-danger-border: rgba(229, 62, 62, 0.35);
+
+  --color-info: #63b3ed;
+  --color-info-bg: rgba(66, 153, 225, 0.14);
+  --color-info-border: rgba(66, 153, 225, 0.35);
+
+  --color-warning: #f6e05e;
+  --color-warning-bg: rgba(214, 158, 46, 0.14);
+  --color-warning-border: rgba(214, 158, 46, 0.35);
+
+  --color-muted-bg: #2d3748;
+  --color-muted-text: #cbd5e0;
+
+  /* --- Navegación lateral (oscura) --- */
+  --nav-bg: #111318;
+  --nav-border: #1f2028;
+  --nav-text: #a0aec0;
+  --nav-text-active: #ffffff;
+  --nav-item-hover: #2d3748;
+  --nav-item-active-bg: var(--color-primary);
+  --nav-item-active-text: #ffffff;
 }
 
 /* =========================================================
@@ -114,6 +155,9 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color var(--transition-theme),
+    color var(--transition-theme);
 }
 
 h1,

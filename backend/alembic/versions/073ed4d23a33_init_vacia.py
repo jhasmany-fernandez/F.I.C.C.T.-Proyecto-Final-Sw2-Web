@@ -1,18 +1,16 @@
 """init_vacia
 
 Revision ID: 073ed4d23a33
-Revises: 
+Revises:
 Create Date: 2026-04-24 12:23:03.961245
 """
-from typing import Sequence, Union
-from alembic import op
-import sqlalchemy as sa
 
+from collections.abc import Sequence
 
-revision: str = '073ed4d23a33'
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision: str = "073ed4d23a33"
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

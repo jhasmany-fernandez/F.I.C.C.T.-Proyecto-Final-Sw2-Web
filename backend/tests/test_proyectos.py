@@ -3,6 +3,8 @@
 Sprint 1 — Sp1-24 — PB-18 (CA-1, CA-3, CA-4).
 """
 
+from datetime import UTC
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -22,7 +24,9 @@ def cliente_seed(db_session) -> Cliente:
 
 
 @pytest.fixture
-def proyectos_seed(db_session, tecnico_usuario: Usuario, cliente_seed: Cliente) -> list[Proyecto]:
+def proyectos_seed(
+    db_session, tecnico_usuario: Usuario, cliente_seed: Cliente
+) -> list[Proyecto]:
     """Crea 3 proyectos de prueba asignados al técnico."""
     proyectos = [
         Proyecto(
@@ -72,7 +76,15 @@ class TestListarProyectos:
         assert len(data["items"]) >= 1
 
         primer = data["items"][0]
-        for campo in ["id", "nombre", "cliente", "estado", "ultima_actividad", "cantidad_puntos", "tecnico"]:
+        for campo in [
+            "id",
+            "nombre",
+            "cliente",
+            "estado",
+            "ultima_actividad",
+            "cantidad_puntos",
+            "tecnico",
+        ]:
             assert campo in primer, f"Falta el campo '{campo}' en la respuesta"
 
     def test_filtro_por_tecnico(
@@ -89,9 +101,7 @@ class TestListarProyectos:
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert all(
-            p["tecnico"]["id"] == tecnico_usuario.id for p in data["items"]
-        )
+        assert all(p["tecnico"]["id"] == tecnico_usuario.id for p in data["items"])
 
     def test_sin_proyectos_retorna_lista_vacia(
         self,
@@ -170,7 +180,15 @@ class TestListarMisProyectos:
         # Solo proyectos no-archivados (seed tiene 2 en_progreso, 1 completado → 3)
         assert len(items) >= 1
         primer = items[0]
-        for campo in ["id", "nombre", "cliente", "descripcion", "estado", "created_at", "updated_at"]:
+        for campo in [
+            "id",
+            "nombre",
+            "cliente",
+            "descripcion",
+            "estado",
+            "created_at",
+            "updated_at",
+        ]:
             assert campo in primer, f"Falta el campo '{campo}' en la respuesta"
         # Estado normalizado a mayúsculas
         assert primer["estado"] == primer["estado"].upper()
@@ -244,9 +262,9 @@ class TestFiltrosFecha:
         proyectos_seed: list[Proyecto],
     ):
         """fecha_desde=ayer (UTC) → incluye proyectos creados hoy (líneas 55-57 proyecto_repository.py)."""
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timedelta
 
-        ayer = (datetime.now(tz=timezone.utc).date() - timedelta(days=1)).isoformat()
+        ayer = (datetime.now(tz=UTC).date() - timedelta(days=1)).isoformat()
         resp = client.get(
             f"/admin/proyectos?fecha_desde={ayer}",
             headers={"Authorization": f"Bearer {admin_token}"},
@@ -262,9 +280,9 @@ class TestFiltrosFecha:
         proyectos_seed: list[Proyecto],
     ):
         """fecha_desde=mañana (UTC) → excluye todos los proyectos creados hoy."""
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timedelta
 
-        manana = (datetime.now(tz=timezone.utc).date() + timedelta(days=1)).isoformat()
+        manana = (datetime.now(tz=UTC).date() + timedelta(days=1)).isoformat()
         resp = client.get(
             f"/admin/proyectos?fecha_desde={manana}",
             headers={"Authorization": f"Bearer {admin_token}"},
@@ -279,9 +297,9 @@ class TestFiltrosFecha:
         proyectos_seed: list[Proyecto],
     ):
         """fecha_hasta=mañana (UTC) → incluye proyectos de hoy (líneas 58-59 proyecto_repository.py)."""
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timedelta
 
-        manana = (datetime.now(tz=timezone.utc).date() + timedelta(days=1)).isoformat()
+        manana = (datetime.now(tz=UTC).date() + timedelta(days=1)).isoformat()
         resp = client.get(
             f"/admin/proyectos?fecha_hasta={manana}",
             headers={"Authorization": f"Bearer {admin_token}"},
@@ -296,10 +314,10 @@ class TestFiltrosFecha:
         proyectos_seed: list[Proyecto],
     ):
         """Ambos filtros combinados (UTC): rango que incluye hoy → proyectos del seed presentes."""
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timedelta
 
-        ayer = (datetime.now(tz=timezone.utc).date() - timedelta(days=1)).isoformat()
-        manana = (datetime.now(tz=timezone.utc).date() + timedelta(days=1)).isoformat()
+        ayer = (datetime.now(tz=UTC).date() - timedelta(days=1)).isoformat()
+        manana = (datetime.now(tz=UTC).date() + timedelta(days=1)).isoformat()
         resp = client.get(
             f"/admin/proyectos?fecha_desde={ayer}&fecha_hasta={manana}",
             headers={"Authorization": f"Bearer {admin_token}"},

@@ -193,9 +193,7 @@ class TestDesactivarCliente:
             "/clientes",
             headers={"Authorization": f"Bearer {admin_token}"},
         )
-        assert not any(
-            c["id"] == cliente_existente.id for c in resp_lista.json()
-        )
+        assert not any(c["id"] == cliente_existente.id for c in resp_lista.json())
 
     def test_desactivar_cliente_inexistente_retorna_404(
         self, client: TestClient, admin_token: str

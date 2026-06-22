@@ -27,40 +27,6 @@ class ReasignarTecnicoIn(BaseModel):
     tecnico_id: int
 
 
-@router.get(
-    "",
-    response_model=ProyectosPageOut,
-    summary="Listar proyectos de la organización",
-    description="Lista todos los proyectos de todos los técnicos con paginación y filtros. "
-    "Solo rol ADMIN. PB-18 — CA-1, CA-2, CA-3, CA-5.",
-)
-def listar_proyectos(
-    page: int = Query(default=1, ge=1, description="Número de página"),
-    page_size: int = Query(default=20, ge=1, le=100, description="Ítems por página"),
-    tecnico_id: int | None = Query(default=None, description="Filtrar por técnico"),
-    estado: str | None = Query(default=None, description="Filtrar por estado"),
-    fecha_desde: date | None = Query(default=None, description="Filtrar desde esta fecha"),
-    fecha_hasta: date | None = Query(default=None, description="Filtrar hasta esta fecha"),
-    db: Session = Depends(get_db),
-    _admin: Usuario = Depends(require_admin),
-) -> ProyectosPageOut:
-    repo = ProyectoRepository(db)
-    items, total = repo.listar_paginado(
-        page=page,
-        page_size=page_size,
-        tecnico_id=tecnico_id,
-        estado=estado,
-        fecha_desde=fecha_desde,
-        fecha_hasta=fecha_hasta,
-    )
-    return ProyectosPageOut(
-        items=items,  # type: ignore[arg-type]
-        total=total,
-        page=page,
-        page_size=page_size,
-    )
-
-
 @router.patch(
     "/{proyecto_id}/archivar",
     response_model=ProyectoListOut,
@@ -75,9 +41,14 @@ def archivar_proyecto_admin(
     repo = ProyectoRepository(db)
     proyecto = repo.obtener_por_id_admin(proyecto_id=proyecto_id)
     if proyecto is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado."
+        )
     if proyecto.estado == "archivado":
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="El proyecto ya está archivado.")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El proyecto ya está archivado.",
+        )
     proyecto = repo.archivar(proyecto=proyecto)
     return ProyectoListOut.model_validate(proyecto)
 
@@ -99,7 +70,9 @@ def reasignar_tecnico(
 
     proyecto = repo_proyecto.obtener_por_id_admin(proyecto_id=proyecto_id)
     if proyecto is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Proyecto no encontrado."
+        )
 
     nuevo_tecnico = repo_usuario.obtener_por_id(body.tecnico_id)
     if nuevo_tecnico is None or not nuevo_tecnico.activo:
@@ -108,9 +81,10 @@ def reasignar_tecnico(
             detail="El técnico indicado no existe o está inactivo.",
         )
 
-    proyecto = repo_proyecto.reasignar_tecnico(proyecto=proyecto, nuevo_tecnico_id=body.tecnico_id)
+    proyecto = repo_proyecto.reasignar_tecnico(
+        proyecto=proyecto, nuevo_tecnico_id=body.tecnico_id
+    )
     return ProyectoListOut.model_validate(proyecto)
-
 
 
 @router.get(
@@ -125,8 +99,12 @@ def listar_proyectos(
     page_size: int = Query(default=20, ge=1, le=100, description="Ítems por página"),
     tecnico_id: int | None = Query(default=None, description="Filtrar por técnico"),
     estado: str | None = Query(default=None, description="Filtrar por estado"),
-    fecha_desde: date | None = Query(default=None, description="Filtrar desde esta fecha"),
-    fecha_hasta: date | None = Query(default=None, description="Filtrar hasta esta fecha"),
+    fecha_desde: date | None = Query(
+        default=None, description="Filtrar desde esta fecha"
+    ),
+    fecha_hasta: date | None = Query(
+        default=None, description="Filtrar hasta esta fecha"
+    ),
     db: Session = Depends(get_db),
     _admin: Usuario = Depends(require_admin),
 ) -> ProyectosPageOut:

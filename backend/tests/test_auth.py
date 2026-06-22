@@ -4,7 +4,6 @@ Sprint 1 — Sp1-16 — PB-09 (CA-1, CA-2, CA-3, CA-4).
 Coverage objetivo: ≥ 80 % en auth.
 """
 
-import pytest
 from fastapi.testclient import TestClient
 
 from app.models.usuario import Usuario
@@ -13,7 +12,9 @@ from app.models.usuario import Usuario
 class TestLogin:
     """PB-09 — Sp1-16: login OK y KO."""
 
-    def test_login_exitoso_retorna_tokens(self, client: TestClient, admin_usuario: Usuario):
+    def test_login_exitoso_retorna_tokens(
+        self, client: TestClient, admin_usuario: Usuario
+    ):
         """CA-1: Login válido retorna access_token, refresh_token y perfil."""
         resp = client.post(
             "/auth/login",
@@ -27,7 +28,9 @@ class TestLogin:
         assert data["usuario"]["email"] == "admin@test.bo"
         assert "password_hash" not in data["usuario"]  # CA-5: no exponer hash
 
-    def test_login_contrasena_incorrecta_retorna_401(self, client: TestClient, admin_usuario: Usuario):
+    def test_login_contrasena_incorrecta_retorna_401(
+        self, client: TestClient, admin_usuario: Usuario
+    ):
         """CA-2: Contraseña incorrecta → 401 con mensaje genérico."""
         resp = client.post(
             "/auth/login",
@@ -55,6 +58,7 @@ class TestLogin:
             activo=False,
         )
         from app.core.security import hash_password
+
         u.password_hash = hash_password("Pass1234!")
         db_session.add(u)
         db_session.commit()
@@ -94,7 +98,9 @@ class TestRefresh:
 class TestLogout:
     """PB-09 — Sp1-16: cierre de sesión (CA-4)."""
 
-    def test_logout_revoca_refresh_token(self, client: TestClient, admin_usuario: Usuario):
+    def test_logout_revoca_refresh_token(
+        self, client: TestClient, admin_usuario: Usuario
+    ):
         """CA-4: Logout elimina refresh_token; refresh posterior debe fallar."""
         login_resp = client.post(
             "/auth/login",

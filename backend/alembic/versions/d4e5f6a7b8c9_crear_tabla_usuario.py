@@ -5,15 +5,16 @@ Revises: a3d77185c343
 Create Date: 2026-04-24
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision: str = "d4e5f6a7b8c9"
-down_revision: Union[str, None] = "073ed4d23a33"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "073ed4d23a33"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -23,7 +24,9 @@ def upgrade() -> None:
         sa.Column("nombre", sa.String(length=120), nullable=False),
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("password_hash", sa.String(length=255), nullable=False),
-        sa.Column("rol", sa.String(length=30), nullable=False, server_default="tecnico"),
+        sa.Column(
+            "rol", sa.String(length=30), nullable=False, server_default="tecnico"
+        ),
         sa.Column("activo", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column(
             "created_at",

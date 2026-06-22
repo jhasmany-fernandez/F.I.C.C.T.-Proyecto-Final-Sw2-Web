@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LoginAdmin from "@/features/auth/pages/LoginAdmin";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 import AdminLayout from "@/features/admin/pages/AdminLayout";
 import GestionUsuarios from "@/features/admin/pages/GestionUsuarios";
 import GestionClientes from "@/features/admin/pages/GestionClientes";
@@ -18,12 +16,6 @@ const queryClient = new QueryClient({
 });
 
 function AppRoutes() {
-  const { cargarSesion } = useAuth();
-
-  useEffect(() => {
-    cargarSesion();
-  }, [cargarSesion]);
-
   return (
     <Routes>
       {/* Redirigir raíz a login */}
